@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Session End Time Calculator</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			padding: 20px;
+		}
+		h1 {
+			text-align: center;
+			margin-bottom: 30px;
+			color: #333;
+		}
+		label {
+			font-weight: bold;
+			color: #333;
+		}
+		input[type="time"], input[type="text"], button {
+			font-size: 16px;
+			padding: 10px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+			margin-bottom: 20px;
+			color: #333;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		button {
+			background-color: #4CAF50;
+			color: #fff;
+			font-weight: bold;
+			transition: background-color 0.3s ease;
+		}
+		button:hover {
+			background-color: #3e8e41;
+		}
+		#end-time,#break-time {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+		}
+	</style>
+	<script type="text/javascript">
+		function calculateEndTime() {
+			// Get the session start time
+			var startTime = document.getElementById("start-time").value;
+			
+			// Parse the start time to a Date object
+			var startDate = new Date();
+			startDate.setHours(startTime.split(":")[0]);
+			startDate.setMinutes(startTime.split(":")[1]);
+			
+			// Get the break times
+			var breakTimes = document.getElementById("break-times").value.split(",");
+			
+			// Parse each break time to start and end Date objects
+			var breakStarts = [];
+			var breakEnds = [];
+			for (var i = 0; i < breakTimes.length; i++) {
+				var breakStart = new Date();
+				breakStart.setHours(breakTimes[i].split("-")[0].split(":")[0]);
+				breakStart.setMinutes(breakTimes[i].split("-")[0].split(":")[1]);
+				var breakEnd = new Date();
+				breakEnd.setHours(breakTimes[i].split("-")[1].split(":")[0]);
+				breakEnd.setMinutes(breakTimes[i].split("-")[1].split(":")[1]);
+				breakStarts.push(breakStart);
+				breakEnds.push(breakEnd);
+			}
+			
+			// Calculate the end time by adding 9 hours to the start time
+			var endTime = new Date(startDate.getTime() + (9 * 60 * 60 * 1000));
+			var breakTime = 0;
+			// add the break times from the end time
+			for (var i = 0; i < breakStarts.length; i++) {
+				if (endTime > breakStarts[i]) {
+					if (endTime < breakEnds[i]) {
+						endTime = breakStarts[i];
+						breakTime += breakStarts[i];
+					} else {
+						endTime = new Date(endTime.getTime() + (breakEnds[i].getTime() - breakStarts[i].getTime()));
+                        breakTime += (breakEnds[i].getTime() - breakStarts[i].getTime())
+					}
+				}
+			}
+			
+			// Display the end time
+			// document.getElementById("end-time").innerHTML = endTime.getHours() + ":" + ("0" + endTime.getMinutes()).slice(-2);
+            const endTimeString = endTime.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true});
+            document.getElementById('end-time').textContent = endTimeString;
+            document.getElementById('break-time').textContent = breakTime / 60000 + " mins";
+		}
+	</script>
+</head>
+<body>
+	<h1>Session End Time Calculator</h1>
+	<div style="max-width: 600px; margin: 0 auto;">
+		<form>
+			<label for="start-time">Session Start Time:</label>
+			<input type="time" id="start-time" required>
+			<label for="break-times">Break Times (e.g. 13:00-13:20, 14:00-14:10):</label>
+			<input type="text" id="break-times" placeholder="Optional">
+			<button type="button" onclick="calculateEndTime()">Calculate End Time</button>
+		</form>
+		<p>Session end time:</p>
+		<p id="end-time"></p>
+
+        <p>Break time:</p>
+		<p id="break-time"></p>
+
+	</div>
+</body>
+</html>
