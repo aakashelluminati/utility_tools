@@ -246,15 +246,15 @@
 
             const countdownElement = document.getElementById('countdown');
 
-            if(distance < 0){
-                countdownElement.innerHTML = "Go Home.. They won't pay you extra!!!";
-            }else{
+            // if(distance < 0){
+            //     countdownElement.innerHTML = "Go Home.. They won't pay you extra!!!";
+            // }else{
                 if(breakData[breakData.length - 1].stopped == false){
                     countdownElement.innerHTML = hours.toString().padStart(2, "0") + ':' + minutes.toString().padStart(2, "0") + ':' + seconds.toString().padStart(2, "0") + ' remain...';
                 }else{
                     countdownElement.innerHTML = 'Timer stopped. Reason : '+breakData[breakData.length - 1].notes;
                 }
-            }
+            // }
         }
 
         // Update the countdown every second
