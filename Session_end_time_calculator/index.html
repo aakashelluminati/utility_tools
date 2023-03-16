@@ -136,8 +136,10 @@
         window.addEventListener('load', init);
 
         function init(){
+            selected_user = localStorage.getItem("selected_user") || 0;
             setCurrentDate();
             setUserDropdown();
+
 
         }
 
@@ -178,17 +180,22 @@
                 const option = document.createElement("option");
                 option.value = i;
                 option.text = users[i];
+                if(i == selected_user){
+                    option.selected = true;
+                }
                 dropdown.appendChild(option);
             }
 
             dropdown.addEventListener("change", () => {
                 selected_user = dropdown.value;
+                localStorage.setItem("selected_user", selected_user);
                 console.log("selected_user : "+selected_user)
             });
         };
 
         const calculateEndTime = async () => {
             console.log(" *** calculateEndTime")
+            localStorage.setItem("selected_user", selected_user);
                 console.log("selected_user : "+selected_user)
             if(interval){
                 clearInterval(interval);
@@ -246,15 +253,19 @@
 
             const countdownElement = document.getElementById('countdown');
 
-            // if(distance < 0){
-            //     countdownElement.innerHTML = "Go Home.. They won't pay you extra!!!";
-            // }else{
-                if(breakData[breakData.length - 1].stopped == false){
-                    countdownElement.innerHTML = hours.toString().padStart(2, "0") + ':' + minutes.toString().padStart(2, "0") + ':' + seconds.toString().padStart(2, "0") + ' remain...';
+            if(breakData[breakData.length - 1].stopped == false){
+                if(distance < 0){
+                    countdownElement.innerHTML = "Go Home!!!";
                 }else{
-                    countdownElement.innerHTML = 'Timer stopped. Reason : '+breakData[breakData.length - 1].notes;
+                    countdownElement.innerHTML = hours.toString().padStart(2, "0") + ':' + minutes.toString().padStart(2, "0") + ':' + seconds.toString().padStart(2, "0") + ' remains';
                 }
-            // }
+            }else{
+                if(breakData[breakData.length - 1].notes.length > 0){
+                    countdownElement.innerHTML = 'Timer stopped<br>Reason : '+breakData[breakData.length - 1].notes;
+                }else{
+                    countdownElement.innerHTML = 'Timer stopped'
+                }
+            }
         }
 
         // Update the countdown every second
