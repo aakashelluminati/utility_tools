@@ -144,6 +144,7 @@
         var start_date = 0;
         var end_date = 0;
         var interval;
+        var breakData;
         const totalDailyHours = 9
         const users = [
             "Aakash",
@@ -202,7 +203,7 @@
                 }
             });
 
-            const breakData = await response.json();
+            breakData = await response.json();
             console.log(breakData)
 
             const startTime = new Date(breakData[0].startTime);
@@ -248,7 +249,11 @@
             if(distance < 0){
                 countdownElement.innerHTML = "Go Home.. They won't pay you extra!!!";
             }else{
-                countdownElement.innerHTML = hours.toString().padStart(2, "0") + ':' + minutes.toString().padStart(2, "0") + ':' + seconds.toString().padStart(2, "0") + ' remain...';
+                if(breakData[breakData.length - 1].stopped == false){
+                    countdownElement.innerHTML = hours.toString().padStart(2, "0") + ':' + minutes.toString().padStart(2, "0") + ':' + seconds.toString().padStart(2, "0") + ' remain...';
+                }else{
+                    countdownElement.innerHTML = 'Timer stopped';
+                }
             }
         }
 
