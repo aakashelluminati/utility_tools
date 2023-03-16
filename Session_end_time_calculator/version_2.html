@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Session End Time Calculator</title>
+</head>
+
+<body>
+    <h1>Session End Time Calculator</h1>
+    <!-- <p>Session Start Time: <input type="time" id="start-time" value="09:00" /></p> -->
+
+    <label for="datepicker">Select a date:</label>
+    <input type="date" id="datepicker">
+
+    <button id="calculate-btn">Calculate End Time</button>
+    <p id="end-time"></p>
+
+    <script>
+        var start_date = 0;
+        var end_date = 0;
+
+        const config = {
+            accountId: "538403e43f2e415496e3736622e3bd0c",
+            authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjUzODQwM2U0M2YyZTQxNTQ5NmUzNzM2NjIyZTNiZDBjIiwiYXVkIjoic2VydmVyIn0.yWm2YCqy4AD84nHyyxGUG9IcxOKvsdQ1FWUlKlsp3iE"
+        }
+        const calculateEndTime = async () => {
+            console.log(" *** calculateEndTime")
+            getDate();
+
+            let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + config.accountId;
+
+            const response = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${config.authToken}`
+                }
+            });
+
+            const breakData = await response.json();
+            console.log(breakData)
+
+            const startTime = new Date(breakData[0].startTime);
+
+            let totalBreakTime = 0;
+
+            for (let i = 1; i < breakData.length; i++) {
+                const breakStartTime = new Date(breakData[i - 1].endTime);
+                const breakEndTime = new Date(breakData[i].startTime);
+                const breakDuration = breakEndTime - breakStartTime;
+                totalBreakTime += breakDuration;
+            }
+
+            const totalSessionTime = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
+            const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
+
+            const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+            const minutes = sessionEndTime.getMinutes();
+            const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+            const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes
+                .toString()
+                .padStart(2, "0")} ${ampm}`;
+
+            document.getElementById("end-time").innerText = `Session End Time: ${endTimeStr}`;
+        };
+
+        function getDate() {
+            var date = document.getElementById("datepicker").value;
+            var milliseconds = new Date(date).getTime();
+            start_date = milliseconds
+            end_date = start_date + 86400000;
+        }
+
+        document.getElementById("calculate-btn").addEventListener("click", calculateEndTime);
+    </script>
+</body>
+
+</html>
