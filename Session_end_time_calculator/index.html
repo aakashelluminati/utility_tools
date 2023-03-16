@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Session End Time Calculator</title>
     <style>
         body {
@@ -66,10 +67,40 @@
 
         #user-dropdown select:focus {
             outline: none;
-            border-color: #0066cc;
+            border-color: #70767c;
         }
 
       
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+                padding: 10px;
+            }
+            input[type="date"], button, #user-dropdown {
+                width: 90%;
+            }
+            #user-dropdown {
+                width: 93%;
+            }
+        }
+
+
+        .session-end-time {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 0;
+            /* padding: 20px 0; */
+            /* border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); */
+        }
+
+        .remaining-time {
+            color: #ff9900;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px #333333;
+        }
     </style>
 </head>
 
@@ -83,8 +114,9 @@
         <input type="date" id="datepicker"><br>
 
         <button id="calculate-btn">Calculate</button><br>
-        <p id="end-time"></p>
-        <p id="countdown"></p>
+        <p id="end-time" class="session-end-time"></p>
+        <p id="countdown" class="remaining-time"></p>
+
     </div>
 
     <script>
@@ -184,7 +216,7 @@
                 .toString()
                 .padStart(2, "0")} ${ampm}`;
 
-            document.getElementById("end-time").innerText = `Session End Time: ${endTimeStr}`;
+            document.getElementById("end-time").innerText = `Ends At: ${endTimeStr}`;
             updateCountdown(sessionEndTime)
             interval = setInterval(() => {
                 updateCountdown(sessionEndTime)
