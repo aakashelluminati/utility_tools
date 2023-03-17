@@ -123,7 +123,16 @@
             line-height: 50px;
         }
 
+        #visitor-count {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+
 </head>
 
 <body>
@@ -141,11 +150,39 @@
         <br>
         <p id="end-time" class="session-end-time"></p>
         <p id="countdown" class="remaining-time"></p>
+        <div><span id="visitor-count"></span></div>
 
     </div>
 
-    <script>
+     <script>
 
+        
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            databaseURL: "https://logger-5727c-default-rtdb.firebaseio.com/",
+            apiKey: "AIzaSyC2j-fqEcSd_IYYiVBlgnUJpFvxaHoCHQI",
+            authDomain: "logger-5727c.firebaseapp.com",
+            projectId: "logger-5727c",
+            storageBucket: "logger-5727c.appspot.com",
+            messagingSenderId: "72610148853",
+            appId: "1:72610148853:web:41ebfe06d7a9ef8a61b0bc"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the database
+        var database = firebase.database();
+
+        // Read the visitor count from the database and display it
+        database.ref('visitorCount').on('value', function(snapshot) {
+            var count = snapshot.val();
+            console.log("count : "+count);
+            if (count === null) {
+                count = 0;
+            }
+        });
+   
         // Function to set current date in datepicker
         function setCurrentDate() {
             const currentDate = new Date();
@@ -164,10 +201,21 @@
             selected_user = localStorage.getItem("selected_user") || 0;
             setCurrentDate();
             setUserDropdown();
-
-
+            increment_visitor_count();
+                
         }
 
+        function increment_visitor_count(){
+            // Increment the visitor count in the database on every page load
+            database.ref('visitorCount').transaction(function(count) {
+                if (count != null) {
+                    document.getElementById('visitor-count').innerHTML = "Visitor count:" + count;
+                    return count + 1;
+                }else{
+                    return count + 1;
+                }
+            });
+        }
         var start_date = 0;
         var end_date = 0;
         var interval;
