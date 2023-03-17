@@ -204,6 +204,9 @@
         const populateTimeline = (breakData) => {
             timeline.innerHTML = ""
             totalDuration = breakData[breakData.length - 1].endTime - breakData[0].startTime
+            if(totalDuration < (totalDailyHours * 60 * 60 * 1000)){
+                totalDuration = totalDailyHours * 60 * 60 * 1000
+            }
             // Loop through the sessions array and create a timeline element for each session
             for (var i = 0; i < breakData.length; i++) {
                 var session = breakData[i];
