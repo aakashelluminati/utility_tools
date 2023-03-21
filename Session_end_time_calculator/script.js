@@ -204,9 +204,9 @@ const calculateEndTime = async () => {
 
     document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
     updateCountdown(sessionEndTime)
-    // interval = setInterval(() => {
-    //     updateCountdown(sessionEndTime)
-    // }, 1000);
+    interval = setInterval(() => {
+        updateCountdown(sessionEndTime)
+    }, 1000);
     increment_visitor_count();
     populateTimeline(breakData);
 
