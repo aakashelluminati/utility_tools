@@ -78,6 +78,9 @@ p {
     #timeline{
         width: 90% !important;
     }
+    .activity_breakdown {
+        width: 99% !important;
+    }
 }
 
 
@@ -142,4 +145,39 @@ p {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+}
+
+.activity_breakdown {
+    margin: auto;
+    
+    border-collapse: collapse;
+    width: 50%;
+    margin-bottom: 1rem;
+    background-color: #fff;
+    color: #212529;
+    border: 1px solid #dee2e6;
+}
+  
+.activity_breakdown th,
+.activity_breakdown td {
+    padding: 0.75rem;
+    vertical-align: top;
+    text-align: left;
+    border-top: 1px solid #dee2e6;
+}
+  
+
+.activity_breakdown th {
+    font-weight: bold;
+    text-align: left;
+    background-color: #4CAF50;
+    color: #fff;
+
+
+}
+.activity_breakdown tbody tr {
+    background-color: #f2f2f2;
+}
+.activity_breakdown tbody tr.meeting{
+    background-color: #4caf505e !important;
 }
