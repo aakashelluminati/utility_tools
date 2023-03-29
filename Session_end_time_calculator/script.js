@@ -39,10 +39,18 @@ function setCurrentDate() {
 // Call setCurrentDate function when page loads
 window.addEventListener("load", init);
 
+const loading = document.getElementById('loading-container');
+const myTable = document.getElementById('myTable');
+const mainContainer = document.getElementById('main-container');
+const no_data = document.getElementById('no_data');
+
+
 function init() {
-    selected_user = localStorage.getItem("selected_user") || 0;
+    selected_user = localStorage.getItem("selected_teammember") || 0;
     setCurrentDate();
     setUserDropdown();
+    loading.style.display = 'none';
+    myTable.style.display = 'none';
 }
 
 function increment_visitor_count() {
@@ -155,14 +163,14 @@ const setUserDropdown = () => {
 
     dropdown.addEventListener("change", () => {
         selected_user = dropdown.value;
-        localStorage.setItem("selected_user", selected_user);
+        localStorage.setItem("selected_teammember", selected_user);
         console.log("selected_user : " + selected_user);
     });
 };
 
 const calculateEndTime = async () => {
     console.log(" *** calculateEndTime");
-    localStorage.setItem("selected_user", selected_user);
+    localStorage.setItem("selected_teammember", selected_user);
     console.log("selected_user : " + selected_user);
     if (interval) {
         clearInterval(interval);
@@ -170,43 +178,51 @@ const calculateEndTime = async () => {
     getDate();
 
     let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + config[selected_user].accountId;
-
+    loading.style.display = 'flex';
     const response = await fetch(url, {
         headers: {
             Authorization: `Bearer ${config[selected_user].authToken}`,
         },
     });
+    loading.style.display = 'none';
 
     breakData = await response.json();
-    console.log(breakData);
 
-    const startTime = new Date(breakData[0].startTime);
-
-    let totalBreakTime = 0;
-
-    for (let i = 1; i < breakData.length; i++) {
-        const breakStartTime = new Date(breakData[i - 1].endTime);
-        const breakEndTime = new Date(breakData[i].startTime);
-        const breakDuration = breakEndTime - breakStartTime;
-        totalBreakTime += breakDuration;
-    }
-
-    const totalSessionTime = totalDailyHours * 60 * 60 * 1000; // 9 hours in milliseconds
-    const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
-
-    const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
-    const minutes = sessionEndTime.getMinutes();
-    const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
-    const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-
-    document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
-    updateCountdown(sessionEndTime);
-    interval = setInterval(() => {
+    if(breakData.length == 0){
+        mainContainer.style.display = 'none';
+        no_data.style.display = 'inline';
+    }else{
+        const startTime = new Date(breakData[0].startTime);
+    
+        let totalBreakTime = 0;
+    
+        for (let i = 1; i < breakData.length; i++) {
+            const breakStartTime = new Date(breakData[i - 1].endTime);
+            const breakEndTime = new Date(breakData[i].startTime);
+            const breakDuration = breakEndTime - breakStartTime;
+            totalBreakTime += breakDuration;
+        }
+    
+        const totalSessionTime = totalDailyHours * 60 * 60 * 1000; // 9 hours in milliseconds
+        const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
+    
+        const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+        const minutes = sessionEndTime.getMinutes();
+        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+    
+        document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
         updateCountdown(sessionEndTime);
-    }, 1000);
-    increment_visitor_count();
-    populateTimeline(breakData);
-    show_activity_breakdown(breakData);
+        interval = setInterval(() => {
+            updateCountdown(sessionEndTime);
+        }, 1000);
+        increment_visitor_count();
+        populateTimeline(breakData);
+        show_activity_breakdown(breakData);
+        mainContainer.style.display = 'inline';
+        no_data.style.display = 'none';
+
+    }
 };
 
 function updateCountdown(endTime) {
@@ -270,28 +286,35 @@ function show_activity_breakdown(json) {
     json.forEach((element) => {
         let period = getFormatedTime24(element.startTime) + " - " + getFormatedTime24(element.endTime).toLocaleString();
         let duration = decimalHoursToHoursMinutes(element.activeHours);
-
-        let activityLevel = element.activityLevel != "NA" ? " (" + element.activityLevel + "%)" : "";
-        let task = element.projectName + ": " + element.projectTaskName + activityLevel;
-        let notes = element.notes;
-
-        let newRow = tableBody.insertRow();
-        if (element.mmode == true) {
-            newRow.className = "meeting";
+        
+        if(duration != "0h 0m"){
+            if(duration.substr(0,2) == "0h"){
+                duration = duration.substr(3,)
+            }
+            let activityLevel = element.activityLevel != "NA" ? " (" + element.activityLevel + "%)" : "";
+            let task = element.projectName + ": " + element.projectTaskName + activityLevel;
+            let notes = element.notes;
+    
+            let newRow = tableBody.insertRow();
+            if (element.mmode == true) {
+                newRow.className = "meeting";
+            }
+    
+            let cell1 = newRow.insertCell(0);
+            cell1.innerHTML = period;
+    
+            let cell2 = newRow.insertCell(1);
+            cell2.innerHTML = duration;
+    
+            let cell3 = newRow.insertCell(2);
+            cell3.innerHTML = task;
+    
+            let cell4 = newRow.insertCell(3);
+            cell4.innerHTML = notes;
         }
-
-        let cell1 = newRow.insertCell(0);
-        cell1.innerHTML = period;
-
-        let cell2 = newRow.insertCell(1);
-        cell2.innerHTML = duration;
-
-        let cell3 = newRow.insertCell(2);
-        cell3.innerHTML = task;
-
-        let cell4 = newRow.insertCell(3);
-        cell4.innerHTML = notes;
     });
+    myTable.style.display = 'inline';
+
 }
 
 function decimalHoursToHoursMinutes(decimalHours) {
