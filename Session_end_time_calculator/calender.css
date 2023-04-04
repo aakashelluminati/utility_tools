@@ -1,0 +1,68 @@
+
+table {
+    border-collapse: collapse;
+    margin: 20px auto;
+}
+
+th {
+    background-color: #555;
+    color: #fff;
+    font-weight: normal;
+    text-align: center;
+    padding: 10px 15px;
+}
+
+td {
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #555;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+td:hover {
+    background-color: #eee;
+}
+
+.present {
+background-color: #4caf50;
+color: #fff;
+}
+.present1 {
+background-color: #006f04;
+color: #fff;
+}
+.present2 {
+    background-color: #a9ffac;
+    color: #000;
+}
+
+.absent {
+background-color: #ff1100;
+color: #fff;
+}
+.idle {
+background-color: #e3fc00;
+color: rgb(0, 0, 0);
+}
+.tooltip .tooltiptext{
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    z-index: 99999999999;
+    font-size: 14px;
+    white-space: nowrap;
+    display: none;
+}
+
+td:hover .tooltip .tooltiptext{
+    display: block;
+}

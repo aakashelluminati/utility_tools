@@ -33,7 +33,9 @@ function setCurrentDate() {
     const day = currentDate.getDate().toString().padStart(2, "0");
     const formattedDate = `${year}-${month}-${day}`;
 
-    document.getElementById("datepicker").value = formattedDate;
+    if(document.getElementById("datepicker")){
+        document.getElementById("datepicker").value = formattedDate;
+    }
 }
 
 // Call setCurrentDate function when page loads
@@ -43,14 +45,17 @@ const loading = document.getElementById('loading-container');
 const myTable = document.getElementById('myTable');
 const mainContainer = document.getElementById('main-container');
 const no_data = document.getElementById('no_data');
-
+let selected_month = [1672511400000, 1675189799000];
 
 function init() {
     selected_user = localStorage.getItem("selected_teammember") || 0;
     setCurrentDate();
     setUserDropdown();
+    setMonthDropdown();
     loading.style.display = 'none';
-    myTable.style.display = 'none';
+    if(myTable){
+        myTable.style.display = 'none';
+    }
 }
 
 function increment_visitor_count() {
@@ -143,6 +148,17 @@ function getFormatedTime(time) {
 
     return endTimeStr;
 }
+function getFormatedTimeFromNum(num) {
+
+    // Extract the hours and minutes
+    const hours = Math.floor(num);
+    const minutes = Math.round((num - hours) * 60);
+
+    // Convert to a string in the desired format
+    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    return timeStr;
+}
+
 function getFormatedTime24(time) {
     const sessionEndTime = new Date(time);
     const hours = sessionEndTime.getHours();
@@ -170,6 +186,42 @@ const setUserDropdown = () => {
         localStorage.setItem("selected_teammember", selected_user);
         console.log("selected_user : " + selected_user);
     });
+};
+
+const setMonthDropdown = () => {
+    
+    const selectMonth = document.getElementById("month-dropdown");
+    if(selectMonth){
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+    
+        for (let month = 0; month <= currentMonth; month++) {
+            const option = document.createElement('option');
+            option.value = `${month}-${currentYear}`;
+            option.text = new Date(currentYear, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            selectMonth.appendChild(option);
+        }
+
+        selectMonth.addEventListener('change', () => {
+            const [month, year] = selectMonth.value.split('-');
+            console.log(month);
+            console.log(year);
+    
+            const startDate = new Date(year, month , 1);
+            console.log(startDate+"")
+    
+            const endDay = new Date(year, +month+1, 0).getDate(); // Get number of days in current month
+            console.log(endDay)
+    
+            const endDate = new Date(year, month, endDay, 23, 59, 59); // Set end date to last day of month at 11:59:59 PM
+            console.log(endDate+"")
+    
+            const startTimestamp = startDate.getTime();
+            const endTimestamp = endDate.getTime();
+            selected_month = [startTimestamp, endTimestamp];
+            console.log(selected_month);
+          });
+    }
 };
 
 const calculateEndTime = async () => {
@@ -269,20 +321,26 @@ function getDate() {
     end_date = start_date + 86400000;
 }
 
-document.getElementById("calculate-btn").addEventListener("click", calculateEndTime);
+if(document.getElementById("calculate-btn")){
+    document.getElementById("calculate-btn").addEventListener("click", calculateEndTime);
+}
+
+
 
 // Get the stats button and visitor count elements
 const statsButton = document.querySelector("#visitor-count-container");
 const visitorCount = document.querySelector("#visitor-count");
 
-// Show/hide the visitor count element on mouseover/mouseout of the stats button
-statsButton.addEventListener("mouseover", function () {
-    visitorCount.style.display = "block";
-});
-
-statsButton.addEventListener("mouseout", function () {
-    visitorCount.style.display = "none";
-});
+if(statsButton){
+    // Show/hide the visitor count element on mouseover/mouseout of the stats button
+    statsButton.addEventListener("mouseover", function () {
+        visitorCount.style.display = "block";
+    });
+    
+    statsButton.addEventListener("mouseout", function () {
+        visitorCount.style.display = "none";
+    });
+}
 
 function show_activity_breakdown(json) {
     let tableBody = document.querySelector("#myTable tbody");
@@ -331,4 +389,209 @@ function decimalHoursToHoursMinutes(decimalHours) {
     let hoursText = hours > 1 ? "h" : "h";
     let minutesText = minutes > 1 ? "m" : "m";
     return hours + "" + hoursText + " " + minutes + "" + minutesText;
+}
+
+
+/* Calender view  */
+
+const daysInMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+};
+
+const formatDate = (date) => {
+    date = new Date(date)
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+};
+
+const formatDateInTime = (timestamp) => {
+    // Create a new Date object from the timestamp
+    const dateObj = new Date(timestamp);
+    // Convert to a string in the desired time zone
+    const timeZone = 'Asia/Kolkata'; // Example time zone
+    const timeStr = dateObj.toLocaleTimeString('en-US', { timeZone, hour12: true });
+    console.log(timeStr);
+    // Extract hours and minutes and format as "hh:mm AM/PM"
+    const [hours,ampm] = timeStr.split(' ');
+    console.log(ampm);
+    const [hh, mm] = hours.split(':');
+    const formattedTime = `${hh.padStart(2, '0')}:${mm} ${ampm}`;
+    return formattedTime
+};
+
+const showCalenderData = async () => {
+    // let start_date = 1680287400000
+    // let end_date = 1682879399000
+
+    console.log(selected_month);
+
+
+
+    let start_date = +selected_month[0]
+    let end_date = +selected_month[1]
+
+    let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?includeLeaves=true&startTime=`+start_date+`&endTime=`+end_date+`&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL&includeSessionTimings=true`
+
+    // let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + config[selected_user].accountId;
+    loading.style.display = 'flex';
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${config[selected_user].authToken}`,
+        },
+    });
+    loading.style.display = 'none';
+
+    data = await response.json();
+
+    const calendar = document.getElementById('calendar');
+    const dates = data.daywiseSummary.daywiseSummaryDetails.map(d => { console.log(d.firstSessionStartTime); formatDate(new Date(d.firstSessionStartTime))});
+    const uniqueDates = [...new Set(dates)];
+
+    // Create the table header
+    const headerRow = document.createElement('tr');
+    uniqueDates.forEach(date => {
+        const headerCell = document.createElement('th');
+        headerCell.textContent = date;
+        headerRow.appendChild(headerCell);
+    });
+    calendar.appendChild(headerRow);
+
+
+    // const empDetail = document.getElementById('emp_detail');
+    // const monthDetail = document.getElementById('monthDetail');
+
+    // empDetail.innerHTML = ``;
+    // monthDetail.innerHTML = `<span>`+data[0]["Employee Name"]+`</span>`;
+
+    // Create the table body
+    const nameToRow = new Map();
+
+        const today = new Date(data.startTime);
+        console.log("today : "+today);
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth();
+        const daysInCurrentMonth = daysInMonth(currentYear, currentMonth);
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+        const emp_name = data.daywiseSummary.daywiseSummaryDetails ? data.daywiseSummary.daywiseSummaryDetails[0].employeeName : "";
+        let html = `<table><tr><th style="background-color: white;color: black;border: solid #555555;">`+new Date(data.startTime).toLocaleString('default', { month: 'long' })+ ` `+ new Date(data.startTime).getFullYear() +`</th><th colspan="6" style="background-color: white;color: black;border: solid #555555;">`+emp_name+`</th></tr>`;
+        html += "<tr style='border: 1px solid;'><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>";
+
+        let date = 1;
+        for (let i = 0; i < 5; i++) {
+            html += "<tr>";
+            for (let j = 0; j < 7; j++) {
+                if (i === 0 && j < firstDayOfMonth) {
+                    html += "<td></td>";
+                } else if (date > daysInCurrentMonth) {
+                    html += "<td></td>";
+                } else {
+
+                    
+                    const formattedDate = formatDate(new Date(currentYear, currentMonth, date));
+                    const dayData = data.daywiseSummary.daywiseSummaryDetails.find(d => formatDate(d.firstSessionStartTime) === formattedDate);
+                    const attendanceFlag = dayData ? dayData["Attendance Flag"] : "-";
+                    
+                    console.log(dayData)
+                    if(dayData){
+                        console.log(dayData.totalHours)
+                    }
+
+                    // const timerValue = dayData ? dayData["Timer"] : "-";
+                    // const idleValue = dayData ? dayData["Idle"] : "-";
+                    // const inclusuveIdleValue = dayData ? dayData["Total Inc Idle"] : "-";
+                    // const punchInValue = dayData ? dayData["Punch In"] : "-";
+                    // const punchOutValue = dayData ? dayData["Punch Out"] : "-";
+
+                    const timerValue = dayData ? getFormatedTimeFromNum(dayData.totalHours) : "-"; ;
+                    const idleValue = dayData ? getFormatedTimeFromNum(dayData.idleHours) : 0; ;
+                    const inclusuveIdleValue = dayData ? "0" : "00:00"; ;
+
+                    const punchInValue = dayData ? formatDateInTime(dayData.firstSessionStartTime) : "-"; ;
+                    const punchOutValue = dayData ? formatDateInTime(dayData.lastSessionEndTime) : "-"; ;
+
+                    console.log("timerValue  : "+timerValue);
+                    if (dayData) {
+                        if(idleValue != "00:00"){
+
+                           
+                            console.log("here 1");
+
+                            html += `<td class="idle">${date}`
+                            if(timerValue != "-"){
+                                html += `<br> ${timerValue}`;
+                            }
+                            if(idleValue != "00:00"){
+                                html += `<br>Idle: ${idleValue}`;
+                            }
+                            if(inclusuveIdleValue != "00:00"){
+                                html += `<br><div class="tooltip">Inc: ${inclusuveIdleValue} 
+                                                                            <span class="tooltiptext">${timerValue}<br>Inc: ${inclusuveIdleValue}<br>Idle: ${idleValue}<br>Punch In: ${punchInValue}<br>Punch Out: ${punchOutValue}</span>
+                                                                        </div>`;
+                            }
+                            html += `</td>`;
+                        }else{
+
+                            const timeString = timerValue;
+                            const [hours, minutes] = timeString.split(":");
+                            const seconds = hours * 60 * 60 + minutes * 60;
+                            const nineHoursInSeconds = 9 * 60 * 60;
+
+
+                            const halfHoursInSeconds = 4.5 * 60 * 60;
+
+
+                            if (seconds > nineHoursInSeconds-1) {
+                                html += `<td class="present1">${date}`
+                                if(timerValue != "-"){
+                                    html += `<div class="tooltip"> ${timerValue} 
+                                                                            <span class="tooltiptext">${timerValue}<br>Inc: ${inclusuveIdleValue}<br>Idle: ${idleValue}<br>Punch In: ${punchInValue}<br>Punch Out: ${punchOutValue}</span>
+                                                                        </div>`;
+                                }
+                                html += `</td>`;
+                            } else if (seconds > halfHoursInSeconds-1) {
+                                html += `<td class="present">${date}`
+                                if(timerValue != "-"){
+                                    html += `<div class="tooltip"> ${timerValue} 
+                                                <span class="tooltiptext">${timerValue}<br>Inc: ${inclusuveIdleValue}<br>Idle: ${idleValue}<br>Punch In: ${punchInValue}<br>Punch Out: ${punchOutValue}</span>
+                                            </div>`;
+                                }
+                                html += `</td>`;
+                            }else {
+                                html += `<td class="present2">${date}`
+                                if(timerValue != "-"){
+                                    html += `<div class="tooltip"> ${timerValue}  <br>(Half Day)
+                                                <span class="tooltiptext">${timerValue}<br>Inc: ${inclusuveIdleValue}<br>Idle: ${idleValue}<br>Punch In: ${punchInValue}<br>Punch Out: ${punchOutValue}</span>
+                                            </div>`;
+                                }
+                                html += `</td>`;
+                                    
+                            }
+
+                            
+                        }
+
+                    } else {
+                        html += `<td class="absent">${date}`
+                        // if(timerValue != "-"){
+                        //     html += `<br>Timer: ${timerValue}`;
+                        // }
+                        // if(idleValue != "-"){
+                        //     html += `<br>Idle: ${idleValue}`;
+                        // }
+                        html += `</td>`;
+                    }
+                    date++;
+                }
+            }
+            html += "</tr>";
+        }
+
+        html += "</table>";
+        calendar.innerHTML = html;
+
+}
+if(document.getElementById("get_calender_data")){
+    document.getElementById("get_calender_data").addEventListener("click", showCalenderData);
 }

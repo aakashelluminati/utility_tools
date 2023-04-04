@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="calender.css">
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+</head>
+<body>
+    <div id="loading-container">
+        <img id="loading" src="assets/loading.gif">
+    </div>
+    <div style="text-align:center;">
+        <select id="user-dropdown"></select><br><br>
+        <select id="month-dropdown"></select><br><br>
+        <button id="get_calender_data">Get Data</button><br>
+        <a href="index.html"><button id="calculate-btn">Back</button></a><br>
+
+    
+        <div id="emp_detail"></div>
+        <div id="monthDetail"></div>
+        <div id="calendar"></div>
+        
+        <!-- <div><span id="visitor-count"></span></div> -->
+        <div id="visitor-count-container">
+           <div id="visitor-count" style="display: none;"></div>
+           <div id="visitor-info-icon">
+               <img src="assets/info.png" style="width: 30px;">
+           </div>
+       </div>
+    </div>
+   
+
+
+
+    <script src="script.js"></script>
+    <script>
+    </script>
+</body>
+</html>
