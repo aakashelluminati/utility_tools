@@ -71,7 +71,7 @@ var end_date = 0;
 var interval;
 var breakData;
 const totalDailyHours = 9;
-const users = ["Aakash", "Chirag", "Jaydip", "Dhyey", "Vishal"];
+const users = ["Aakash", "Chirag", "Jaydip", "Dhyey", "Vishal", "Tejash"];
 var selected_user = 0;
 var timeline = document.getElementById("timeline");
 var totalDuration = totalDailyHours * 60 * 60 * 1000;
@@ -96,6 +96,10 @@ const config = [
     {
         accountId: "40c3f8112c80470c8c9a47894aded0e5",
         authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+    },
+    {
+        accountId: "c5d2d8d731674a7086627adf7bb4f8a9",
+        authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6ImM1ZDJkOGQ3MzE2NzRhNzA4NjYyN2FkZjdiYjRmOGE5IiwiYXVkIjoic2VydmVyIn0.oHFiG9QNf_X64elcyO5K50xq_6jRFMNGtsMneNO2AEY",
     },
 ];
 const populateTimeline = (breakData) => {
