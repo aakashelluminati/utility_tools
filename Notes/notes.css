@@ -1,0 +1,14 @@
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list-group-item .note-title {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+
+.wraptext {
+    white-space: pre-wrap;    
+}
