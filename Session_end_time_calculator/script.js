@@ -76,7 +76,7 @@ var end_date = 0;
 var interval;
 var breakData;
 const totalDailyHours = 9;
-const users = ["Aakash", "Chirag", "Jaydip", "Dhyey", "Vishal", "Tejash"];
+const users = ["Aakash", "Chirag", "Jaydip", "Dhyey", "Vishal", "Tejash", "Shubham"];
 var selected_user = 0;
 var timeline = document.getElementById("timeline");
 var totalDuration = totalDailyHours * 60 * 60 * 1000;
@@ -105,6 +105,10 @@ const config = [
     {
         accountId: "c5d2d8d731674a7086627adf7bb4f8a9",
         authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6ImM1ZDJkOGQ3MzE2NzRhNzA4NjYyN2FkZjdiYjRmOGE5IiwiYXVkIjoic2VydmVyIn0.oHFiG9QNf_X64elcyO5K50xq_6jRFMNGtsMneNO2AEY",
+    },
+    {
+        accountId: "add053c09e694d58b81b5db75bad60b3",
+        authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6ImFkZDA1M2MwOWU2OTRkNThiODFiNWRiNzViYWQ2MGIzIiwiYXVkIjoic2VydmVyIn0.rWxPdqX8LzYbawJkH8650QZlSJkzJ82Dh-WYfgpqG_M",
     },
 ];
 const populateTimeline = (breakData) => {
@@ -315,7 +319,9 @@ function updateCountdown(endTime) {
 // Update the countdown every second
 
 function getDate() {
-    var date = document.getElementById("datepicker").value;
+    var date = document.getElementById("datepicker").value; 
+
+    console.log(new Date(date))
     var milliseconds = new Date(date).getTime();
     start_date = milliseconds;
     end_date = start_date + 86400000;
