@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Time</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="style.css">
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+
+    </head>
+
+    
+    <body>
+       
+        <div style="text-align:center;">
+            <div id="main-container">
+                <p id="end-time" class="session-end-time"></p>
+                <p id="countdown" class="remaining-time"></p>
+            </div>
+        </div>
+        <script>
+            const config = [
+                {
+                    accountId: "538403e43f2e415496e3736622e3bd0c",
+                    authToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjUzODQwM2U0M2YyZTQxNTQ5NmUzNzM2NjIyZTNiZDBjIiwiYXVkIjoic2VydmVyIn0.yWm2YCqy4AD84nHyyxGUG9IcxOKvsdQ1FWUlKlsp3iE",
+                }
+            ]
+            var interval;
+            const mainContainer = document.getElementById('main-container');
+            const calculateEndTime = async () => {
+                console.log(" *** calculateEndTime");
+                const selected_user = 0;
+                const totalDailyHours = 9;
+
+
+                if (interval) {
+                    clearInterval(interval);
+                }
+                let today = new Date();
+                today.setHours(0);
+                today.setMinutes(0); 
+                var milliseconds = today.getTime();
+                start_date = milliseconds;
+                end_date = start_date + 86400000;
+
+
+                let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + config[selected_user].accountId;
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: `Bearer ${config[selected_user].authToken}`,
+                    },
+                });
+
+                breakData = await response.json();
+
+                console.log(breakData);
+                if(breakData.length == 0){
+                    mainContainer.style.display = 'none';
+                }else{
+                    const startTime = new Date(breakData[0].startTime);
+                
+                    let totalBreakTime = 0;
+                
+                    for (let i = 1; i < breakData.length; i++) {
+                        const breakStartTime = new Date(breakData[i - 1].endTime);
+                        const breakEndTime = new Date(breakData[i].startTime);
+                        const breakDuration = breakEndTime - breakStartTime;
+                        totalBreakTime += breakDuration;
+                    }
+                
+                    const totalSessionTime = totalDailyHours * 60 * 60 * 1000; // 9 hours in milliseconds
+                    const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
+                
+                    const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+                    const minutes = sessionEndTime.getMinutes();
+                    const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+                    const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+                
+                    document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
+                    updateCountdown(sessionEndTime);
+                    interval = setInterval(() => {
+                        updateCountdown(sessionEndTime);
+                    }, 1000);
+                    mainContainer.style.display = 'inline';
+
+                }
+            };
+
+            function updateCountdown(endTime) {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const countdownElement = document.getElementById("countdown");
+
+                if (breakData[breakData.length - 1].stopped == false) {
+                    if (distance < 0) {
+                        countdownElement.innerHTML = "Go Home!!!";
+                    } else {
+                        countdownElement.innerHTML = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0") + " remains";
+                    }
+                } else {
+                    let sessionEndTime = new Date(breakData[breakData.length - 1].endTime);
+                    let hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+                    let minutes = sessionEndTime.getMinutes();
+                    let ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+                    let endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
+                    if (breakData[breakData.length - 1].notes.length > 0) {
+                        countdownElement.innerHTML = `Timer stopped At ` + endTimeStr + `<br><span class="reason">Reason : ` + breakData[breakData.length - 1].notes + `</span>`;
+                    } else {
+                        countdownElement.innerHTML = "Timer stopped At " + endTimeStr;
+                    }
+                }
+            }
+
+            calculateEndTime();
+
+        </script>
+    </body>
+
+
+
+</html>
