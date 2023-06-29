@@ -52,17 +52,17 @@
   </style>
 </head>
 
-<body class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+<body class="bg-white dark:bg-gray-800 text-black-900 dark:text-white">
 
 
   <button id="darkModeToggle" class="fixed right-4 bottom-4 w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700"></button>
   <div class="container mx-auto p-4">
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
 
-      <div class="mt-8">
+      <div class="mt-12">
         <label for="carNumberInput" class="block text-lg font-bold mb-2"></label>
         <input id="carNumberInput" type="text" class="border border-gray-300 rounded-md p-2 mb-2 dark:text-black" placeholder="Enter car number plate">
-        <button id="searchButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        <button id="searchButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Search
         </button>
       </div>
@@ -170,7 +170,15 @@
 
     // Call the function to set data on page load
 
-
+    let results = [];
+    
+    if(!localStorage.getItem("car_results")){
+      localStorage.setItem("car_results",JSON.stringify("[]"))
+    }else{
+      results = JSON.parse(localStorage.getItem("car_results"))
+    }
+    results = JSON.parse(JSON.stringify(results))
+    console.log(results);
     function searchCarInfo(carNumber) {
       // var carNumber = document.getElementById("carNumberInput").value.toUpperCase();
       // var carNumber = "GJ01KJ6381"
@@ -178,12 +186,9 @@
 
       var headers = {
         "appversion": "251",
-        "city": "Delhi",
         "deviceid": "ffee1d-df-d8bd-68af-aabe2b2156fe",
-        "origin": "https://www.carinfo.app",
-        "referer": "https://www.carinfo.app/",
         "src": "car-info_web",
-        "userid": "64914e4dbfe7652595a6ed98"
+        "userid": "64953df2344a1d4a6b68f604"
       };
 
       fetch(apiUrl, {
@@ -192,6 +197,11 @@
         .then(response => response.json())
         .then(data => {
           // Process the response data
+          let index = results.findIndex((data) => data.carNumber == carNumber)
+          if(index == -1){
+            results.push({carNumber: carNumber, name: data.data.data.header.title})
+            localStorage.setItem("car_results",JSON.stringify(results))
+          }
           setDataNew(data.data);
         })
         .catch(error => {
