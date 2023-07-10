@@ -1,0 +1,345 @@
+<!-- saved from url=(0034) -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ngrok - Inspect</title>
+
+    <link type="text/css" rel="stylesheet" href="./ngrok - Inspect_files/style.css">
+
+    <link type="text/css" rel="stylesheet" href="./ngrok - Inspect_files/style1.css">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://127.0.0.1:4040/static/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/default.min.css">
+    <script src="/highlight.min.js"></script>
+
+
+    <style data-olark="true" type="text/css">
+        .olark-key,
+        #hbl_code,
+        #olark-data {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1114.0" data-gr-ext-installed="">
+   
+    <div id="app">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header"><a href="http://127.0.0.1:4040/" class="navbar-brand">Request Analyzer</a>
+                    <li class="navbar-text styles__session__37GXX" id="connection-status"><span
+                            class="label label-danger" title="online" style="line-height: 2;" id="connection_state">Offline</span></li><button
+                        type="button" class="navbar-toggle collapsed"><span class="sr-only">Toggle
+                            navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span
+                            class="icon-bar"></span></button>
+                </div>
+            </div>
+        </nav>
+        <div class="styles__content__27wMc">
+            <div class="container inspect">
+                <div class="row">
+                    <div class="styles__inspectContainer__3X-SY">
+                        <div class="styles__inputGroup__FHvFU">
+                            <div class="styles__inputContainer__2tW1E">
+                                <div class="styles__activeContainer__2bB4r">
+                                    <div>
+                                        <p class="styles__measuringTape__26OBV"><span
+                                                class="styles__unit__2MCPF "></span></p><input type="text"
+                                            placeholder="Enter socket URL" id="socket_url" class="styles__input__bxoYS" spellcheck="false"
+                                            value="http://localhost:5000">
+                                        </div>
+                                        
+                                    </div>
+                                    <button onClick="connectSocket()">Connect</button>
+                            </div>
+                        </div>
+
+                        <div class="styles__inspectPage__3rnNV" style="margin-top: 10px;">
+                            <div class="styles__section__3dDb2 styles__selector__3hiW9">
+                                <div class="styles__inspectSelector__43s3k">
+                                    <h4 class="styles__allRequests__3tZqF"><button type="button"
+                                            class="btn btn-default pull-right" onClick="clear()">Clear</button>All Requests</h4>
+                                    <table class="table styles__roundTripSelect__3qtCz">
+                                        <tbody id="request_table">
+                                            <!-- API LIST -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT section -->
+                            <div class="styles__section__3dDb2">
+                                <div class="styles__inspectRoundTrip__37FC-">
+                                    <!-- right section general detail -->
+                                    <div class="styles__row__2oPWs">
+                                        <div class="styles__info__37A5o"><span id="req_time" class="muted">less than 20 seconds ago</span>
+                                            <div class="styles__duration__2WRAb"><i
+                                                    class="glyphicon glyphicon-time"></i> Duration<span
+                                                    class="muted" id="req_duration">4.63ms</span></div>
+                                        </div>
+                                        <div class="styles__ip__3J8bV" title="103.190.6.162">
+                                            <div><i class="glyphicon glyphicon-user"></i><span>IP</span><span class="muted styles__remoteAddr__3XxLw"
+                                                    id="req_ip">103.190.6.162</span></div>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+                                    <div>
+
+                                        <h3 class="wrapped" id="req_detail_title"></h3>
+                                        <div class="styles__inspector__3-gxU">
+                                            <div class="pull-right">
+                                                <div class="styles__container__3nPNa" style="">
+                                                    <div class="dropdown btn-group btn-group-primary"><button type="button"
+                                                            class="foo btn btn-primary">Replay</button><button aria-label="Replay" id="replay" role="button"
+                                                            aria-haspopup="true" aria-expanded="false" type="button" class="dropdown-toggle btn btn-primary"> <span
+                                                                class="caret"></span></button>
+                                                        <ul role="menu" class="dropdown-menu dropdown-menu-right" aria-labelledby="replay">
+                                                            <li role="presentation" class=""><a role="menuitem" tabindex="-1" href="#">Replay with Modifications</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <form></form>
+                                                </div>
+                                            </div>
+                                            <div id="request">
+                                                <ul role="tablist" class="nav nav-tabs">
+                                                    <li role="presentation" class="active"><a id="request-tab-0" role="tab" aria-controls="request-pane-0"
+                                                            aria-selected="true" href="#">Summary</a></li>
+                                                    <li role="presentation" class=""><a id="request-tab-1" role="tab" aria-controls="request-pane-1" tabindex="-1"
+                                                            aria-selected="false" href="#">Headers</a></li>
+                                                </ul>
+                                                <div class="tab-content">
+                                                    <div id="request-pane-0" aria-labelledby="request-tab-0"
+                                                        role="tabpanel" aria-hidden="false" class="tab-pane active">
+                                                        <div></div>
+                                                        <div>
+                                                            <h6 id="req_size">204 bytes application/json </h6>
+                                                            <pre><code class="hljs json" id="req_body" style="pointer-events: none;"></code></pre>
+                                                        </div>
+                                                    </div>
+                                                    <div id="request-pane-1" aria-labelledby="request-tab-2"
+                                                        role="tabpanel" aria-hidden="true" class="tab-pane">
+                                                        <pre><code class="hljs json" id="req_headers"></code></pre>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="styles__withMargin__1uW98">
+                                    <div>
+                                        <h3 class="text-info">200 OK</h3>
+                                        <div class="styles__inspector__3-gxU">
+                                            <div id="response">
+                                                <ul role="tablist" class="nav nav-tabs">
+                                                    <li role="presentation" class="active"><a id="response-tab-0"
+                                                            role="tab" aria-controls="response-pane-0"
+                                                            aria-selected="true"
+                                                            href="#">Summary</a></li>
+                                                    <li role="presentation" class=""><a id="response-tab-1" role="tab"
+                                                            aria-controls="response-pane-1" tabindex="-1"
+                                                            aria-selected="false"
+                                                            href="#">Headers</a></li>
+                                                </ul>
+                                                <div class="tab-content">
+                                                    <div id="response-pane-0" aria-labelledby="response-tab-0"
+                                                        role="tabpanel" aria-hidden="false" class="tab-pane active">
+                                                        <div>
+                                                            <h6 id="res_size">193 bytes application/json; charset=utf-8 </h6>
+                                                            <pre><code class="hljs json" id="res_body" style="pointer-events: none;"></code></pre>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div id="response-pane-2" aria-labelledby="response-tab-1"
+                                                        role="tabpanel" aria-hidden="true" class="tab-pane">
+                                                        <pre><code class="hljs json"></code></pre>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="socket.min.js"></script>
+
+        <script>
+            
+
+            let all_requests = []
+            document.addEventListener('DOMContentLoaded', function () {
+                // for (let index = 0; index < 2; index++) {
+                //     let json = {
+                //         method: 'POST',
+                //         originalUrl: '/admin/edit_tax',
+                //         absoluteUrl: 'http://localhost:5000/admin/edit_tax',
+                //         statusCode: 200,
+                //         responseTime: 35,
+                //         ip: '::1',
+                //         req_headers: {
+                //             accept: 'application/json, text/plain, */*',
+                //             'accept-language': 'en-US,en;q=0.9',
+                //             admin_id: '64390bdf491a9ad158d6278a',
+                //             'content-type': 'application/json',
+                //             token: 'h7bvNQmO1uVxpaW9knEFkvVxi0cs2DTT',
+                //             type: '1',
+                //             referer: 'http://localhost:4206/',
+                //             'referrer-policy': 'strict-origin-when-cross-origin',
+                //             'user-agent': 'PostmanRuntime/7.32.3',
+                //             host: 'localhost:5000',
+                //             'accept-encoding': 'gzip, deflate, br',
+                //             connection: 'keep-alive',
+                //             'content-length': '204',
+                //             cookie: 'connect.sid=s%3A8-D3zHY_fYgU7dng9ZGCSw9-70bAt-p9.VMlE70wo6e%2FlCel5s6%2FJFeWTry0kEDOqDucto%2BYRB%2BI',
+                //             is_show_email: true,
+                //             is_show_phone: true,
+                //             is_country_based_access_control_enabled: false,
+                //             allowed_countries: [],
+                //             is_city_based_access_control_enabled: false,
+                //             allowed_cities: [],
+                //             countries: [],
+                //             cities: []
+                //         },
+                //         req_time: 1688478084466,
+                //         req_body: {
+                //             _id: '64a3d6f632941f02a6d7a009',
+                //             tax_name: ['10% GST', '10% GST', ''],
+                //             tax: 10,
+                //             is_tax_visible: true,
+                //             country_id: '640fed3a80dac254bd0e53dc'
+                //         },
+                //         req_size: '141 bytes',
+                //         responseBody: {
+                //             success: true,
+                //             message: 884,
+                //             res_data: {
+                //                 _id: '64a3d6f632941f02a6d7a009',
+                //                 tax_name: [Array],
+                //                 tax: 10,
+                //                 is_tax_visible: true,
+                //                 country_id: '640fed3a80dac254bd0e53dc'
+                //             }
+                //         },
+                //         responseSize: '183 bytes'
+                //     }
+
+
+
+
+                //     add_request(json)
+                // }
+            });
+
+        function add_request(json){
+            
+            all_requests.push(json)
+
+            // hljs.initHighlighting();
+
+            let request_table = document.getElementById("request_table")
+
+            let tr = document.createElement("tr");
+            // tr.className = "styles__selected__2GU71"
+            tr.id = json.req_time
+            tr.className = "api_list_item"
+            tr.innerHTML = `<td class="wrapped" onClick="show_detail(${json.req_time})">
+                        <div class="styles__path__22NpZ">${json.method} ${json.originalUrl}</div>
+                    </td>
+                    <td>${json.statusCode}</td>
+                    <td><span class="pull-right">${json.responseTime}ms</span></td>`
+
+            request_table.appendChild(tr)
+            show_detail(json.req_time)
+        }
+
+        function clear(){
+            // all_requests = [];
+        }
+        function show_detail(req_time){
+
+            let index = all_requests.findIndex((x)=> x.req_time == req_time)
+            console.log(index);
+            if(index != -1){
+                document.querySelectorAll(".api_list_item").forEach((item)=> {
+                    item.className = "api_list_item"
+                }) 
+
+                let json = all_requests[index]
+                console.log(json);
+                document.getElementById("req_headers").textContent = JSON.stringify(json.req_headers, null, 4);
+                document.getElementById("req_body").textContent = JSON.stringify(json.req_body, null, 4);
+                document.getElementById("res_body").textContent = JSON.stringify(json.responseBody, null, 4);
+                
+                document.getElementById("req_time").textContent = `less than ${(( Date.now() - json.req_time) / 1000).toFixed(0)} seconds ago`;
+                document.getElementById("req_duration").textContent = json.responseTime + `ms`;
+                document.getElementById("req_ip").textContent = json.ip;
+                document.getElementById("req_detail_title").textContent = `${json.method} ${json.originalUrl}`;
+                document.getElementById("req_size").textContent = `${json.req_size} application/json`;
+                document.getElementById("res_size").textContent = `${json.responseSize} application/json`;
+                
+                document.getElementById(json.req_time).classList.add("styles__selected__2GU71")
+
+            }
+            
+        }
+
+        
+        function connectSocket(){
+            let url = document.getElementById("socket_url").value;
+            console.log(url);
+
+            // Connect to the server
+            const socket = io(url);
+
+            // Event: When the connection is established
+
+            socket.on('connect', () => {
+
+                document.getElementById("connection_state").textContent = `Online`;
+                document.getElementById("connection_state").classList.remove("label-danger")
+                document.getElementById("connection_state").classList.add("label-success")
+
+                console.log('Socket connection established.');
+
+                // Subscribe to the "req_detail" event
+                socket.on('req_socket', (data) => {
+                    console.log('Received req_detail event:', data);
+                    // Process the received data as needed
+                    add_request(data)
+                    
+                });
+            });
+
+            // Event: When an error occurs
+            socket.on('error', (error) => {
+                console.log('Socket error:', error);
+            });
+
+            // Event: When the socket connection is closed
+            socket.on('disconnect', () => {
+                document.getElementById("connection_state").textContent = `Offline`;
+                document.getElementById("connection_state").classList.remove("label-success")
+                document.getElementById("connection_state").classList.add("label-danger")
+                socket.destroy();
+                connectSocket()
+                console.log('Socket connection closed.');
+            });
+
+
+        }
+        </script>
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

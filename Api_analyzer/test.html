@@ -1,0 +1,40 @@
+<!-- https://codepen.io/brandonhimpfen/pen/qOeQEp?editors=1111 -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/default.min.css">
+    <script src="/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <title>Test Highlight</title>
+    
+  </head>
+  
+  <body>
+    <pre>
+        <code class="language-python">
+          def f(x, y):
+            return x + y
+        </code>
+    </pre>
+
+    <script>
+        var head = document.getElementsByTagName('head')[0]
+        var script = document.createElement('script')
+        script.src = "highlight.min.js"
+        script.type = 'text/javascript'
+    
+        head.append(script)
+        script.addEventListener("load", () => {
+            console.log("File loaded")
+            hljs.initHighlightingOnLoad();
+            hljs.initHighlighting();
+        });
+
+      </script>
+      
+  
+  </body>
+
+
+</html>
