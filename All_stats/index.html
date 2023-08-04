@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Employee Data Table</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <label for="search">Search by Name: </label>
+    <input type="text" id="search" oninput="filterTable()" placeholder="Enter employee name">
+  </div>
+  <table id="employeeTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <!-- <th>ID</th> -->
+        <!-- <th>Email</th> -->
+        <th>Name</th>
+        <th>Account Status</th>
+        <th>Account Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Employee data will be dynamically inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    let employees = []; // To store the fetched employee data
+
+    // Function to fetch data from the API and populate the table
+    async function fetchEmployeeData() {
+      try {
+        const response = await fetch("https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true", {
+          headers: {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "Referer": "https://client.teamlogger.com/",
+            "Referrer-Policy": "strict-origin-when-cross-origin"
+            // Add the rest of the headers here
+          },
+          body: null,
+          method: "GET"
+        });
+
+        employees = await response.json();
+        populateTable(employees); // Populate the table initially with all employees
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    // Function to populate the table with employee data
+    function populateTable(data) {
+      const tableBody = document.querySelector("#employeeTable tbody");
+      tableBody.innerHTML = "";
+    //   <td>${employee.id}</td>
+    //   <td>${employee.email}</td>
+
+      data.forEach((employee, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index+1}</td>
+          <td>${employee.name}</td>
+          <td>${employee.accountStatus}</td>
+          <td>${employee.accountType}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Function to filter the table based on the search input
+    function filterTable() {
+      const searchTerm = document.getElementById("search").value.trim().toLowerCase();
+      const filteredEmployees = employees.filter(employee => {
+        return employee.name.toLowerCase().includes(searchTerm);
+      });
+      populateTable(filteredEmployees);
+    }
+
+    // Call the function to fetch and populate data when the page loads
+    fetchEmployeeData();
+  </script>
+</body>
+</html>

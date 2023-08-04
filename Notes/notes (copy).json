@@ -1,0 +1,118 @@
+{
+    "notes": [
+        {
+            "id": 1682062154324,
+            "title": "Default Password",
+            "content": "sdfuMNBS66y@@",
+            "active": false
+        },
+        {
+            "id": 1682062165490,
+            "title": "Password 123456",
+            "content": "e10adc3949ba59abbe56e057f20f883e",
+            "active": false
+        },
+        {
+            "id": 1682062174506,
+            "title": "Backup Command",
+            "content": "mongodump -d <database_name> -o <directory_backup>",
+            "active": false
+        },
+        {
+            "id": 1682062182331,
+            "title": "Restore Command",
+            "content": "mongorestore -d <database_name> <directory_backup>",
+            "active": false
+        },
+        {
+            "id": 1682062186347,
+            "title": "",
+            "content": "export NODE_OPTIONS=\"--max-old-space-size=8192\"",
+            "active": false
+        },
+        {
+            "id": 1682062200691,
+            "title": "Git Push existing folder",
+            "content": "cd existing_folder\nsudo git init\nsudo git remote add origin git@gitlab.com:Hi-So/Bug-Fixes/bugfixes.git\nsudo git add .\nsudo git commit -m \"Initial commit\"\nsudo git push -u origin master",
+            "active": false
+        },
+        {
+            "id": 1682063258753,
+            "title": "",
+            "content": "https://aakashelluminati.github.io/utility_tools/Notes/",
+            "active": false
+        },
+        {
+            "id": 1682075684410,
+            "title": "Mongo Restore without index",
+            "content": "mongorestore --noIndexRestore -d <database_name> <directory_backup>",
+            "active": false
+        },
+        {
+            "id": 1682914512791,
+            "title": "AlianzaGO",
+            "content": "p$A4pEUoEHufn}X@",
+            "active": false
+        },
+        {
+            "id": 1682945052689,
+            "title": "runp",
+            "content": "56@4Gb%667",
+            "active": false
+        },
+        {
+            "id": 1683194611859,
+            "title": "Demo",
+            "content": "https://demo.appemporio.net/create-demo",
+            "active": false
+        },
+        {
+            "id": 1683535665728,
+            "title": "EBER DEVELOPMENT",
+            "content": "e5E+BTU93A]!_F%5",
+            "active": false
+        },
+        {
+            "id": 1683700133260,
+            "title": "EBER LIVE",
+            "content": "oQ]9kekCdX1,7TyT",
+            "active": false
+        },
+        {
+            "id": 1684494205505,
+            "title": "Sheet password",
+            "content": "Aakash@123",
+            "active": false
+        },
+        {
+            "id": 1684740055275,
+            "title": "Backend report PPT",
+            "content": "https://appemporio-my.sharepoint.com/:p:/g/personal/anagar_elluminatiinc_com/Efby4WZII0xCrPxPiHT_KB0BRxYC_qnf-Ja3v_BSqac7tQ?e=tqLBUv",
+            "active": false
+        },
+        {
+            "id": 1685100193747,
+            "title": "Elluminati11 password",
+            "content": "ElluMinati10rdcube",
+            "active": false
+        },
+        {
+            "id": 1685365149559,
+            "title": "",
+            "content": "glpat-sqxByxvgESj9UoJysSqy",
+            "active": false
+        },
+        {
+            "id": 1685516769707,
+            "title": "corsAnywhereUrl",
+            "content": "https://cors-anywhere.herokuapp.com/",
+            "active": false
+        },
+        {
+            "id": 1685626982690,
+            "title": "",
+            "content": "databaseURL: \"https://tiffin-management-default-rtdb.firebaseio.com/\",\n    apiKey: \"AIzaSyAJEW0xjl9fIfdKhy-IQmBrJxLsUdaDRkI\",\n    authDomain: \"tiffin-management.firebaseapp.com\",\n    projectId: \"tiffin-management\",\n    storageBucket: \"tiffin-management.appspot.com\",\n    messagingSenderId: \"363877368394\",\n    appId: \"1:363877368394:web:7e199da651054d4751dcb3\",\n",
+            "active": false
+        }
+    ]
+}
