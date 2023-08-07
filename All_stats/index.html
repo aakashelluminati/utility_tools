@@ -32,8 +32,8 @@
         <!-- <th>ID</th> -->
         <!-- <th>Email</th> -->
         <th>Name</th>
-        <th>Account Status</th>
-        <th>Account Type</th>
+        <th>Total Time</th>
+        <th>Stopped</th>
       </tr>
     </thead>
     <tbody>
@@ -47,7 +47,9 @@
     // Function to fetch data from the API and populate the table
     async function fetchEmployeeData() {
       try {
-        const response = await fetch("https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true", {
+        let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=1691346600000&endTime=1691432999000&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
+        // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
+        const response = await fetch(url, {
           headers: {
             "accept": "application/json, text/plain, */*",
             "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
@@ -66,7 +68,8 @@
           method: "GET"
         });
 
-        employees = await response.json();
+        respomse = await response.json();
+        employees = respomse?.employeeTimeReport?.timeReportItems
         populateTable(employees); // Populate the table initially with all employees
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -79,24 +82,54 @@
       tableBody.innerHTML = "";
     //   <td>${employee.id}</td>
     //   <td>${employee.email}</td>
-
+    // <td>${employee.activeSecondsCount / 60}</td>
+    // spanHours 
+    // totalHours
+    // onComputerHours
       data.forEach((employee, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${index+1}</td>
-          <td>${employee.name}</td>
-          <td>${employee.accountStatus}</td>
-          <td>${employee.accountType}</td>
+          <td>${employee.title}</td>
+          <td>${formatHoursToMinutes(employee.spanHours)} <br> ${formatHoursToMinutes(employee.totalHours)} <br> ${formatHoursToMinutes(employee.onComputerHours)}</td>
+          <td>${employee.stopped}</td>
         `;
         tableBody.appendChild(row);
       });
+    }
+
+    function getFormatedTime(time) {
+        const sessionEndTime = new Date(time);
+        const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+        const minutes = sessionEndTime.getMinutes();
+        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
+        return endTimeStr;
+    }
+    function formatHoursToMinutes(decimalHours) {
+      // Convert decimal hours to total minutes
+      const totalMinutes = decimalHours * 60;
+
+      // Extract hours and minutes from the totalMinutes
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
+
+      // Format hours and minutes to two-digit format
+      const formattedHours = hours.toString().padStart(2, '0');
+      const formattedMinutes = minutes.toString().padStart(2, '0');
+
+      // Create the formatted string
+      const formattedString = `${formattedHours}:${formattedMinutes}`;
+
+      return formattedString;
     }
 
     // Function to filter the table based on the search input
     function filterTable() {
       const searchTerm = document.getElementById("search").value.trim().toLowerCase();
       const filteredEmployees = employees.filter(employee => {
-        return employee.name.toLowerCase().includes(searchTerm);
+        return employee.title.toLowerCase().includes(searchTerm);
       });
       populateTable(filteredEmployees);
     }
