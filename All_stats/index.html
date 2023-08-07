@@ -3,6 +3,10 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Data Table</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Include DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
   <style>
     table {
       border-collapse: collapse;
@@ -15,127 +19,170 @@
       text-align: left;
     }
 
-    th {
-      background-color: #f2f2f2;
+    
+    /* Custom class for the dot */
+    .dot {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .green-dot {
+      background-color: green;
+    }
+
+    .red-dot {
+      background-color: red;
     }
   </style>
 </head>
 <body>
   <div>
-    <label for="search">Search by Name: </label>
-    <input type="text" id="search" oninput="filterTable()" placeholder="Enter employee name">
+    <!-- Your existing search input here -->
   </div>
-  <table id="employeeTable">
-    <thead>
-      <tr>
-        <th>#</th>
-        <!-- <th>ID</th> -->
-        <!-- <th>Email</th> -->
-        <th>Name</th>
-        <th>Total Time</th>
-        <th>Stopped</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Employee data will be dynamically inserted here -->
-    </tbody>
-  </table>
+  <div style="padding: 10px;">
+      <!-- Add "table" and "table-striped" classes for Bootstrap styling, and set an ID for DataTable initialization -->
+      <table id="employeeTable" class="table table-striped">
+        <thead>
+          <tr>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Total Time</th>
+                <th>Stopped</th>
+              </tr>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Employee data will be dynamically inserted here -->
+        </tbody>
+      </table>
+  </div>
 
+  <!-- Include jQuery and DataTables JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script>
-    let employees = []; // To store the fetched employee data
+      let employees = []; // To store the fetched employee data
 
-    // Function to fetch data from the API and populate the table
-    async function fetchEmployeeData() {
-      try {
-        let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=1691346600000&endTime=1691432999000&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
-        // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
-        const response = await fetch(url, {
-          headers: {
-            "accept": "application/json, text/plain, */*",
-            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Linux\"",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-site",
-            "Referer": "https://client.teamlogger.com/",
-            "Referrer-Policy": "strict-origin-when-cross-origin"
-            // Add the rest of the headers here
-          },
-          body: null,
-          method: "GET"
-        });
+      // Function to fetch data from the API and populate the table
+      async function fetchEmployeeData() {
+        try {
+          let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=1691346600000&endTime=1691432999000&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
+          // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
+          const response = await fetch(url, {
+            headers: {
+              "accept": "application/json, text/plain, */*",
+              "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+              "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+              "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+              "sec-ch-ua-mobile": "?0",
+              "sec-ch-ua-platform": "\"Linux\"",
+              "sec-fetch-dest": "empty",
+              "sec-fetch-mode": "cors",
+              "sec-fetch-site": "same-site",
+              "Referer": "https://client.teamlogger.com/",
+              "Referrer-Policy": "strict-origin-when-cross-origin"
+              // Add the rest of the headers here
+            },
+            body: null,
+            method: "GET"
+          });
 
-        respomse = await response.json();
-        employees = respomse?.employeeTimeReport?.timeReportItems
-        populateTable(employees); // Populate the table initially with all employees
-      } catch (error) {
-        console.error("Error fetching data:", error);
+          respomse = await response.json();
+          employees = respomse?.employeeTimeReport?.timeReportItems
+          populateTable(employees); // Populate the table initially with all employees
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
       }
-    }
 
-    // Function to populate the table with employee data
-    function populateTable(data) {
-      const tableBody = document.querySelector("#employeeTable tbody");
-      tableBody.innerHTML = "";
-    //   <td>${employee.id}</td>
-    //   <td>${employee.email}</td>
-    // <td>${employee.activeSecondsCount / 60}</td>
-    // spanHours 
-    // totalHours
-    // onComputerHours
-      data.forEach((employee, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${index+1}</td>
-          <td>${employee.title}</td>
-          <td>${formatHoursToMinutes(employee.spanHours)} <br> ${formatHoursToMinutes(employee.totalHours)} <br> ${formatHoursToMinutes(employee.onComputerHours)}</td>
-          <td>${employee.stopped}</td>
-        `;
-        tableBody.appendChild(row);
+      // Function to populate the table with employee data
+      function populateTable(data) {
+        const tableBody = document.querySelector("#employeeTable tbody");
+        tableBody.innerHTML = "";
+
+        data.forEach((employee, index) => {
+            const row = document.createElement("tr");
+            if (employee.stopped) {
+                row.classList.add("stopped-row"); // Add the "stopped-row" class if employee.stopped is true
+            }
+            row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${employee.title}</td>
+            <td>${formatHoursToMinutes(employee.totalHours)}</td>
+            <td style='text-align: center;'><span class="dot ${employee.stopped ? 'red-dot' : 'green-dot'}" style='color: transparent;'>${employee.stopped}</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+        }
+
+      function getFormatedTime(time) {
+          const sessionEndTime = new Date(time);
+          const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+          const minutes = sessionEndTime.getMinutes();
+          const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+          const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
+          return endTimeStr;
+      }
+      function formatHoursToMinutes(decimalHours) {
+        // Convert decimal hours to total minutes
+        const totalMinutes = decimalHours * 60;
+
+        // Extract hours and minutes from the totalMinutes
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
+
+        // Format hours and minutes to two-digit format
+        const formattedHours = hours.toString().padStart(2, '0');
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+
+        // Create the formatted string
+        const formattedString = `${formattedHours}:${formattedMinutes}`;
+
+        return formattedString;
+      }
+
+      // Function to filter the table based on the search input
+      function filterTable() {
+        const searchTerm = document.getElementById("search").value.trim().toLowerCase();
+        const filteredEmployees = employees.filter(employee => {
+          return employee.title.toLowerCase().includes(searchTerm);
+        });
+        populateTable(filteredEmployees);
+      }
+
+
+
+    // Function to initialize DataTable on the employee table
+    function initializeDataTable() {
+      $('#employeeTable').DataTable({
+        // Add DataTable options here, e.g., sorting, searching, pagination
+        // For example:
+        "order": [[1, "asc"]], // Sort by the second column (Name) in ascending order
+        "paging": false, // Enable pagination
+        "searching": true, // Enable searching/filtering
+        "stripeClasses": [], // Disable default odd-even row coloring
+        "drawCallback": function (settings) {
+          // After each draw, apply the "stopped-row" class to rows with employee.stopped true
+          $('#employeeTable tbody tr').each(function () {
+            if ($(this).find('td:eq(3)').text() === 'true') {
+              $(this).addClass('stopped-row');
+            } else {
+              $(this).removeClass('stopped-row');
+            }
+          });
+        }
       });
     }
 
-    function getFormatedTime(time) {
-        const sessionEndTime = new Date(time);
-        const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
-        const minutes = sessionEndTime.getMinutes();
-        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
-        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-
-        return endTimeStr;
-    }
-    function formatHoursToMinutes(decimalHours) {
-      // Convert decimal hours to total minutes
-      const totalMinutes = decimalHours * 60;
-
-      // Extract hours and minutes from the totalMinutes
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
-
-      // Format hours and minutes to two-digit format
-      const formattedHours = hours.toString().padStart(2, '0');
-      const formattedMinutes = minutes.toString().padStart(2, '0');
-
-      // Create the formatted string
-      const formattedString = `${formattedHours}:${formattedMinutes}`;
-
-      return formattedString;
-    }
-
-    // Function to filter the table based on the search input
-    function filterTable() {
-      const searchTerm = document.getElementById("search").value.trim().toLowerCase();
-      const filteredEmployees = employees.filter(employee => {
-        return employee.title.toLowerCase().includes(searchTerm);
-      });
-      populateTable(filteredEmployees);
-    }
 
     // Call the function to fetch and populate data when the page loads
-    fetchEmployeeData();
+    fetchEmployeeData().then(() => {
+      initializeDataTable(); // Initialize DataTable after the data is loaded
+    });
   </script>
 </body>
 </html>
