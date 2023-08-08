@@ -67,9 +67,21 @@
       let employees = []; // To store the fetched employee data
 
       // Function to fetch data from the API and populate the table
+
+
+    const today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
+    var milliseconds = new Date(today).getTime();
+    let start_date = milliseconds;
+    let end_date = start_date + 86400000;
+
       async function fetchEmployeeData() {
         try {
-          let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=1691346600000&endTime=1691432999000&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
+          let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime="+start_date+"&endTime="+end_date+"&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
           // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
           const response = await fetch(url, {
             headers: {
