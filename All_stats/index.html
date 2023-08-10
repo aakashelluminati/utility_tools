@@ -7,19 +7,53 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <!-- Include DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    /* Styling for the filter area */
+    .filter-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .filter-area select {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Styling for the DataTable */
     table {
       border-collapse: collapse;
       width: 100%;
+      border: 1px solid #ddd;
     }
 
     th, td {
-      border: 1px solid black;
+      border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
 
-    
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
     /* Custom class for the dot */
     .dot {
       height: 20px;
@@ -35,166 +69,295 @@
     .red-dot {
       background-color: red;
     }
+
+    .blue-dot {
+      background-color: rgb(19, 192, 245);
+    }
+
+    /* Styling for the "Apply Filter" button */
+    #applyFilterBtn {
+      padding: 8px 16px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #applyFilterBtn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Styling for the "Apply Filter" button */
+    #refresh {
+      padding: 8px 16px;
+      background-color: #09b141;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #refresh:hover {
+      background-color: #079235;
+    }
   </style>
 </head>
 <body>
-  <div>
-    <!-- Your existing search input here -->
-  </div>
-  <div style="padding: 10px;">
-      <!-- Add "table" and "table-striped" classes for Bootstrap styling, and set an ID for DataTable initialization -->
-      <table id="employeeTable" class="table table-striped">
-        <thead>
-          <tr>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Total Time</th>
-                <th>Stopped</th>
-              </tr>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Employee data will be dynamically inserted here -->
-        </tbody>
-      </table>
+  <div class="container">
+    <div class="filter-area">
+      <div>
+        <label for="activityStatus">Status:</label>
+        <select id="activityStatus">
+          <option value="all">All</option>
+          <option value="active">Active</option>
+          <option value="meeting">Meeting</option>
+          <option value="stopped">Stopped</option>
+        </select>
+        <button id="applyFilterBtn" onclick="filterTable()">Apply Filter</button>
+        <button id="refresh" onclick="reload()">Reload</button>
+      </div>
+    </div>
+    <table id="employeeTable" class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Total Time</th>
+          <th>Remaining Time</th>
+          <th>Mode</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Employee data will be dynamically inserted here -->
+      </tbody>
+    </table>
   </div>
 
   <!-- Include jQuery and DataTables JavaScript -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script>
-      let employees = []; // To store the fetched employee data
+    let employees = []; // To store the fetched employee data
+    let dataTable; // To store the DataTable instance
 
-      // Function to fetch data from the API and populate the table
+    // Function to fetch data from the API and populate the table
 
 
-    const today = new Date();
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setSeconds(0);
-    today.setMilliseconds(0);
+  const today = new Date();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
 
-    var milliseconds = new Date(today).getTime();
-    let start_date = milliseconds;
-    let end_date = start_date + 86400000;
+  var milliseconds = new Date(today).getTime();
+  let start_date = milliseconds;
+  let end_date = start_date + 86400000;
 
-      async function fetchEmployeeData() {
-        try {
-          let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime="+start_date+"&endTime="+end_date+"&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
-          // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
-          const response = await fetch(url, {
-            headers: {
-              "accept": "application/json, text/plain, */*",
-              "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-              "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
-              "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
-              "sec-ch-ua-mobile": "?0",
-              "sec-ch-ua-platform": "\"Linux\"",
-              "sec-fetch-dest": "empty",
-              "sec-fetch-mode": "cors",
-              "sec-fetch-site": "same-site",
-              "Referer": "https://client.teamlogger.com/",
-              "Referrer-Policy": "strict-origin-when-cross-origin"
-              // Add the rest of the headers here
-            },
-            body: null,
-            method: "GET"
-          });
+  async function reload() {
+    await fetchEmployeeData()
+    filterTable();    
+  }
 
-          respomse = await response.json();
-          employees = respomse?.employeeTimeReport?.timeReportItems
-          populateTable(employees); // Populate the table initially with all employees
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      }
-
-      // Function to populate the table with employee data
-      function populateTable(data) {
-        const tableBody = document.querySelector("#employeeTable tbody");
-        tableBody.innerHTML = "";
-
-        data.forEach((employee, index) => {
-            const row = document.createElement("tr");
-            if (employee.stopped) {
-                row.classList.add("stopped-row"); // Add the "stopped-row" class if employee.stopped is true
-            }
-            row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${employee.title}</td>
-            <td>${formatHoursToMinutes(employee.totalHours)}</td>
-            <td style='text-align: center;'><span class="dot ${employee.stopped ? 'red-dot' : 'green-dot'}" style='color: transparent;'>${employee.stopped}</span></td>
-            `;
-            tableBody.appendChild(row);
+    async function fetchEmployeeData() {
+      try {
+        let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime="+start_date+"&endTime="+end_date+"&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
+        // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
+        const response = await fetch(url, {
+          headers: {
+            "accept": "application/json, text/plain, */*",
+            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "same-site",
+            "Referer": "https://client.teamlogger.com/",
+            "Referrer-Policy": "strict-origin-when-cross-origin"
+            // Add the rest of the headers here
+          },
+          body: null,
+          method: "GET"
         });
-        }
 
-      function getFormatedTime(time) {
-          const sessionEndTime = new Date(time);
-          const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
-          const minutes = sessionEndTime.getMinutes();
-          const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
-          const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-
-          return endTimeStr;
+        respomse = await response.json();
+        employees = respomse?.employeeTimeReport?.timeReportItems
+        populateTable(employees); // Populate the table initially with all employees
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-      function formatHoursToMinutes(decimalHours) {
-        // Convert decimal hours to total minutes
-        const totalMinutes = decimalHours * 60;
+    }
 
-        // Extract hours and minutes from the totalMinutes
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
+    // Function to populate the table with employee data
+    function populateTable(data) {
+      const tableBody = document.querySelector("#employeeTable tbody");
+      tableBody.innerHTML = "";
+      const now = new Date(); // Current date and time
 
-        // Format hours and minutes to two-digit format
-        const formattedHours = hours.toString().padStart(2, '0');
-        const formattedMinutes = minutes.toString().padStart(2, '0');
+      data.forEach((employee, index) => {
+          const row = document.createElement("tr");
+          if (employee.stopped) {
+              row.classList.add("stopped-row"); // Add the "stopped-row" class if employee.stopped is true
+          }
 
-        // Create the formatted string
-        const formattedString = `${formattedHours}:${formattedMinutes}`;
+          let activity_badge = 'green-dot'
+          let status = 'active'
+          if(employee.stopped) { 
+            activity_badge = 'red-dot';
+            status = 'stopped'
+          }else{
+            if(employee?.las?.tStatus == 'meeting'){
+              activity_badge = 'blue-dot';
+              status = 'meeting'
+            }else if(employee?.las?.tStatus == 'active'){
+              activity_badge = 'green-dot';
+              status = 'active'
 
-        return formattedString;
-      }
-
-      // Function to filter the table based on the search input
-      function filterTable() {
-        const searchTerm = document.getElementById("search").value.trim().toLowerCase();
-        const filteredEmployees = employees.filter(employee => {
-          return employee.title.toLowerCase().includes(searchTerm);
-        });
-        populateTable(filteredEmployees);
-      }
-
-
-
-    // Function to initialize DataTable on the employee table
-    function initializeDataTable() {
-      $('#employeeTable').DataTable({
-        // Add DataTable options here, e.g., sorting, searching, pagination
-        // For example:
-        "order": [[1, "asc"]], // Sort by the second column (Name) in ascending order
-        "paging": false, // Enable pagination
-        "searching": true, // Enable searching/filtering
-        "stripeClasses": [], // Disable default odd-even row coloring
-        "drawCallback": function (settings) {
-          // After each draw, apply the "stopped-row" class to rows with employee.stopped true
-          $('#employeeTable tbody tr').each(function () {
-            if ($(this).find('td:eq(3)').text() === 'true') {
-              $(this).addClass('stopped-row');
-            } else {
-              $(this).removeClass('stopped-row');
             }
-          });
-        }
+          }
+          switch (employee?.las?.tStatus) {
+            case "active":
+              
+              break;
+          
+            default:
+              break;
+          }
+          const totalHours = 9; // Total available hours
+          const remainingHours = Math.max(0, totalHours - employee.totalHours);
+
+
+          let mode = employee?.las?.uStatus!=undefined ?  employee?.las?.uStatus : ""
+          row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${employee.title}</td>
+          <td>${formatHoursToMinutes(employee.totalHours)}</td>
+          <td id="remainingTime-${employee.id}">${formatRemainingTime(remainingHours)}</td>
+          <td style='text-align: center;'>${employee?.las?.uStatus === 'WFH' ? '<i class="fa fa-home"></i>' : '<i class="fa fa-building"></i>'}</td>
+          <td style='text-align: center;'><span class="dot ${activity_badge}" style='color: transparent;'>${status}</span></td>
+          `;
+          tableBody.appendChild(row);
       });
+      // updateRemainingTime();
+
+      }
+
+    function formatRemainingTime(totalHours) {
+      const hours = Math.floor(totalHours);
+      const remainingMinutes = (totalHours - hours) * 60;
+      const minutes = Math.floor(remainingMinutes);
+      const seconds = Math.round((remainingMinutes - minutes) * 60);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
 
-    // Call the function to fetch and populate data when the page loads
-    fetchEmployeeData().then(() => {
-      initializeDataTable(); // Initialize DataTable after the data is loaded
+    function updateRemainingTime() {
+      console.log(updateRemainingTime);
+      const now = new Date(); // Current date and time
+
+      employees.forEach(employee => {
+          employee.totalHours += 0.000277778
+          const totalHours = 9; // Total available hours
+          const remainingHours = Math.max(0, totalHours - employee.totalHours);
+          // const totalMinutes = employee.totalHours * 60;
+          // const remainingMinutes = Math.max(0, totalMinutes - now.getHours() * 60 - now.getMinutes());
+          const remainingTimeCell = document.getElementById(`remainingTime-${employee.id}`);
+          if(remainingTimeCell){
+            remainingTimeCell.textContent = formatRemainingTime(remainingHours);
+          }
+      });
+    }
+
+    // Call the function once initially
+
+    // Set up an interval to refresh every second
+    setInterval(updateRemainingTime, 1000);
+
+    function getFormatedTime(time) {
+        const sessionEndTime = new Date(time);
+        const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+        const minutes = sessionEndTime.getMinutes();
+        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+
+        return endTimeStr;
+    }
+    function formatHoursToMinutes(decimalHours) {
+      // Convert decimal hours to total minutes
+      const totalMinutes = decimalHours * 60;
+
+      // Extract hours and minutes from the totalMinutes
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
+
+      // Format hours and minutes to two-digit format
+      const formattedHours = hours.toString().padStart(2, '0');
+      const formattedMinutes = minutes.toString().padStart(2, '0');
+
+      // Create the formatted string
+      const formattedString = `${formattedHours}:${formattedMinutes}`;
+
+      return formattedString;
+    }
+
+    // Function to filter the table based on the search input
+    // function filterTable() {
+    //   const searchTerm = document.getElementById("search").value.trim().toLowerCase();
+    //   const filteredEmployees = employees.filter(employee => {
+    //     return employee.title.toLowerCase().includes(searchTerm);
+    //   });
+    //   populateTable(filteredEmployees);
+    // }
+
+    function filterTable() {
+      const searchTerm = "";
+      const selectedStatus = document.getElementById("activityStatus").value;
+      
+      if (dataTable) {
+        console.log("filterTable");
+        dataTable.search(searchTerm).draw();
+
+        if (selectedStatus !== "all") {
+          console.log("filterTable");
+          dataTable.column(5).search(selectedStatus).draw();
+        }else{
+          dataTable.column(5).search("").draw();
+        }
+      }
+    }
+
+  // Function to initialize DataTable on the employee table
+  function initializeDataTable() {
+    dataTable = $('#employeeTable').DataTable({
+      // Add DataTable options here, e.g., sorting, searching, pagination
+      // For example:
+      "order": [[1, "asc"]], // Sort by the second column (Name) in ascending order
+      "paging": false, // Enable pagination
+      "searching": true, // Enable searching/filtering
+      "stripeClasses": [], // Disable default odd-even row coloring
+      "drawCallback": function (settings) {
+        // After each draw, apply the "stopped-row" class to rows with employee.stopped true
+        $('#employeeTable tbody tr').each(function () {
+          if ($(this).find('td:eq(3)').text() === 'true') {
+            $(this).addClass('stopped-row');
+          } else {
+            $(this).removeClass('stopped-row');
+          }
+        });
+      }
     });
-  </script>
+  }
+
+
+  // Call the function to fetch and populate data when the page loads
+  fetchEmployeeData().then(() => {
+    initializeDataTable(); // Initialize DataTable after the data is loaded
+  });
+</script>
 </body>
 </html>
