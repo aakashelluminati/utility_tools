@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      /* Custom styles */
+      body {
+        background-color: #f3f4f6;
+        color: #222;
+      }
+  
+      .card {
+        background-color: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+  
+      /* Dark mode styles */
+      body.dark-mode {
+        background-color: #111827;
+        color: #f9fafb;
+      }
+  
+      .dark-mode .card {
+        background-color: #374151;
+      }
+  
+      .dark-mode #carNumberInput {
+        color: #f9fafb;
+      }
+  
+      /* ... Other custom styles ... */
+    </style>
+  </head>
+
+<body class="bg-white dark-mode:text-white">
+  <button id="darkModeToggle" class="fixed right-4 bottom-4 w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700"></button>
+
+  
+  <div class="container mx-auto p-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+      <div class="mt-12">
+        <label for="carNumberInput" class="block text-lg font-bold mb-2">Check Car Info</label>
+        <div class="flex items-center">
+          <input id="carNumberInput" type="text" class="border border-gray-300 rounded-md p-2 mb-2 dark-mode:text-black flex-grow" placeholder="Enter car number plate" oninput="this.value = this.value.toUpperCase()">
+          <button id="searchButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+            Search
+          </button>
+          <button id="historyButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded ml-2">
+            History
+          </button>
+        </div>
+      </div>
+      <div id="carInfoNew"></div>
+      <div id="historyList" class="mt-4">
+        <h2 class="font-bold mb-2">Search History:</h2>
+        <ul id="historyItems" class="list-disc list-inside"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ... Your JavaScript code ...
+
+    function setDataNew(data){
+      console.log(data);
+
+      var carDetailsHTML = `<h2 class="card-title text-xl font-bold mb-2"></h2>`
+        carDetailsHTML += `
+            
+            <div class="card rounded-lg shadow-lg p-4">
+            <div class="card-content">
+              <div class="mb-4">
+                <img src="${data.data.header.image}">
+              </div>
+                <div class="mb-4">
+                  <span class="font-bold">Name:</span>
+                  <span id="importantRegistrationDate">${data.data.header.title}</span>
+                </div>
+                <div class="mb-4">
+                  <span class="font-bold">Owner Name:</span>
+                  <span id="importantRegistrationDate">${data.data.header.ownerName}</span>
+                </div>
+                <div class="mb-4">
+                  <span class="font-bold">Ownernership:</span>
+                  <span id="importantRegistrationDate">${data.data.header.ownership}</span>
+                </div>
+            </div>
+              </div><hr class="my-5">`;
+
+      carDetailsHTML += `<h2 class="card-title text-xl font-bold mb-2">${data.data.rcDetails[0]?.title}</h2>`
+      data.data.rcDetails[0].data.groups.forEach(group => {
+        carDetailsHTML += `
+            
+            <div class="card rounded-lg shadow-lg p-4">
+            <h2 class="card-title text-xl font-bold mb-2">${group.title}</h2>
+            <div class="card-content">`
+              
+            group.fields.forEach(field => {
+              carDetailsHTML +=`
+                <div class="mb-4">
+                  <span class="font-bold">${field.name}:</span>
+                  <span id="importantRegistrationDate">${field.value}</span>
+                </div>`
+
+            })
+            carDetailsHTML +=`</div>
+              </div><hr class="my-5">
+            `;
+      });
+
+      carDetailsHTML += `<h2 class="card-title text-xl font-bold mb-2">${data.data.insuranceDetails[0]?.title}</h2>`
+
+      data.data.insuranceDetails[0].data.groups.forEach(group => {
+        carDetailsHTML += `
+            <div class="card rounded-lg shadow-lg p-4">
+            <h2 class="card-title text-xl font-bold mb-2" style="color:${group.fields[0].titleColor}">${group.fields[0].title}</h2>
+            <div class="card-content">
+                <div class="mb-4">
+                  <span class="font-bold">${group.fields[0]?.name}:</span>
+                  <span id="importantRegistrationDate">${group.fields[0]?.value}</span>
+                </div>
+
+                <div class="mb-4">
+                  <span class="font-bold">${group.fields[1]?.name}:</span>
+                  <span id="importantRegistrationDate">${group.fields[1]?.value}</span>
+                </div>
+            </div>
+              </div><hr class="my-8">
+            `;
+      });
+
+      if(data.data.specification[0] && data.data.specification.length > 0){
+        carDetailsHTML += `<h2 class="card-title text-xl font-bold mb-2">${data.data.specification[0]?.title}</h2>
+        <div class="card rounded-lg shadow-lg p-4">
+              <div class="card-content">`
+  
+        data.data.specification[0]?.elements.forEach(group => {
+                carDetailsHTML +=`
+                  <div class="mb-4">
+                    
+                    <!-- <span class="font-bold"><img style="width:20px;float: left;" src="${group.content.imageUrl}">${group.content.title}:</span> -->
+                    <span class="font-bold"><img style="width:20px;float: left;" src="${group.content.imageUrl}"> &nbsp;&nbsp;</span>
+                    <span id="importantRegistrationDate">${group.content.subtitile}</span>
+                  </div>`
+  
+        });
+            carDetailsHTML +=`</div>
+              </div><hr class="my-5">
+            `;
+
+      }
+
+      
+      document.getElementById("carInfoNew").innerHTML = carDetailsHTML;
+      displayCarInfo();
+    }
+
+    // Call the function to set data on page load
+
+    let results = [];
+    
+    if(!localStorage.getItem("car_results")){
+      localStorage.setItem("car_results",JSON.stringify([]))
+    }else{
+      results = JSON.parse(localStorage.getItem("car_results"))
+    }
+    results = JSON.parse(JSON.stringify(results))
+    console.log(results);
+    function searchCarInfo(carNumber) {
+      // var carNumber = document.getElementById("carNumberInput").value.toUpperCase();
+      // var carNumber = "GJ01KJ6381"
+      var apiUrl = "https://web.cuvora.com/car/web/details/list?vehicle_num=" + carNumber.trim().toUpperCase();
+
+      var headers = {
+        "appversion": "251",
+        "deviceid": "ffee1d-df-d8bd-68af-aabe2b2156fe",
+        "src": "car-info_web",
+        "userid": "64953df2344a1d4a6b68f604"
+      };
+
+      fetch(apiUrl, {
+        headers: headers
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Process the response data
+          let index = results.findIndex((data) => data.carNumber == carNumber)
+          if(index == -1){
+            results.push({carNumber: carNumber, name: data.data.data.header.title})
+            localStorage.setItem("car_results",JSON.stringify(results))
+          }
+          setDataNew(data.data);
+        })
+        .catch(error => {
+          console.log("Error:", error);
+        });
+    }
+
+
+    // Get the dark mode toggle button element
+      const darkModeToggle = document.getElementById('darkModeToggle');
+
+      // Function to toggle dark mode
+      function toggleDarkMode() {
+        const isDarkMode = document.body.classList.toggle('dark-mode');
+        darkModeToggle.classList.toggle('bg-gray-300', !isDarkMode);
+        darkModeToggle.classList.toggle('bg-gray-700', isDarkMode);
+      }
+
+      // Add event listener to the dark mode toggle button
+      darkModeToggle.addEventListener('click', toggleDarkMode);
+
+
+      // Function to handle search button click
+      function handleSearch() {
+        console.log("handle search")
+        var carNumber = document.getElementById("carNumberInput").value.toUpperCase();
+        searchCarInfo(carNumber);
+      }
+
+      // Add event listener to the search button
+      document.getElementById("searchButton").addEventListener("click", handleSearch);
+      
+
+
+    //   -------------------------------------------
+
+    // Function to search car info based on history item
+    function searchFromHistory(carNumber) {
+        console.log("searchFromHistory")
+        console.log(carNumber)
+        document.getElementById('carNumberInput').value = carNumber;
+        // handleSearch();
+    }
+
+    // Add event listeners to history items
+    function addHistoryItemListeners() {
+        const historyItems = document.querySelectorAll('#historyItems li');
+        historyItems.forEach(item => {
+        const carNumber = item.getAttribute('data-car-number');
+        item.addEventListener('click', () => searchFromHistory(carNumber));
+        });
+    }
+
+    // Update history list and listeners
+    function updateHistory() {
+        const historyItems = document.getElementById('historyItems');
+        historyItems.innerHTML = '';
+
+        results.forEach(result => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${result.carNumber} - ${result.name}`;
+        listItem.setAttribute('data-car-number', result.carNumber);
+        historyItems.appendChild(listItem);
+        });
+
+        addHistoryItemListeners();
+    }
+    
+    // ---------------------------------------------
+
+     // Function to display search history
+     function displayHistory() {
+      const carInfoNew = document.getElementById('carInfoNew');
+      const historyList = document.getElementById('historyList');
+      const historyItems = document.getElementById('historyItems');
+      historyItems.innerHTML = '';
+
+      results.forEach(result => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${result.carNumber} - ${result.name}`;
+        historyItems.appendChild(listItem);
+      });
+
+      carInfoNew.style.display = 'none';
+      historyList.style.display = 'block';
+      updateHistory();
+
+    }
+
+    // Function to display car information
+    function displayCarInfo() {
+      const carInfoNew = document.getElementById('carInfoNew');
+      const historyList = document.getElementById('historyList');
+
+      carInfoNew.style.display = 'block';
+      historyList.style.display = 'none';
+    }
+
+    // Add event listener to history button
+    const historyButton = document.getElementById('historyButton');
+    historyButton.addEventListener('click', () => {
+      if (results.length > 0) {
+        displayHistory();
+      }
+    });
+
+    updateHistory();
+
+  </script>
+</body>
+
+</html>

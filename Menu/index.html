@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attractive Box List with Links</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark background color for dark mode */
+    color: #e0e0e0; /* Lighter text color for dark mode */
+    margin: 0;
+    padding: 20px;
+  }
+  .box-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+  }
+  .box {
+    background-color: #1e1e1e; /* Darker box color for dark mode */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  .box{
+    color: #e0e0e0; /* Lighter link text color for dark mode */
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+  <div class="box-list">
+    <a href="https://aakashelluminati.github.io/utility_tools/CarInfo/CarInfo.html" class="box">
+      <h2>Car Info</h2>
+    </a>
+    <a href="https://aakashelluminati.github.io/utility_tools/Notes/" class="box">
+      <h2>Notes</h2>
+    </a>
+    <a href="https://aakashelluminati.github.io/utility_tools/Session_end_time_calculator/" class="box">
+      <h2>Daily Activity</h2>
+    </a>
+    <a href="https://aakashelluminati.github.io/utility_tools/Session_end_time_calculator/calender.html" class="box">
+      <h2>Month View</h2>
+    </a>
+    <a href="https://aakashelluminati.github.io/utility_tools/All_stats/" class="box">
+      <h2>All Employee</h2>
+    </a>
+    <!-- <a href="#" class="box">
+      <h2>Upcomming...</h2>
+    </a> -->
+  </div>
+</body>
+</html>
