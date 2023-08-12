@@ -120,14 +120,14 @@
         <button id="refresh" onclick="reload()">Reload</button>
       </div>
     </div>
-    <table id="employeeTable" class="table table-striped">
+    <table id="employeeTable" class="table table-striped" style="width: 100%;">
       <thead>
         <tr>
-          <th>#</th>
+          <!-- <th>#</th> -->
           <th>Name</th>
-          <th>Total Time</th>
-          <th>Remaining Time</th>
-          <th>Mode</th>
+          <th>Time</th>
+          <th>Left</th>
+          <!-- <th>Mode</th> -->
           <th>Status</th>
         </tr>
       </thead>
@@ -234,11 +234,11 @@
 
           let mode = employee?.las?.uStatus!=undefined ?  employee?.las?.uStatus : ""
           row.innerHTML = `
-          <td>${index + 1}</td>
+          <!-- <td>${index + 1}</td> -->
           <td>${employee.title}</td>
           <td>${formatHoursToMinutes(employee.totalHours)}</td>
           <td id="remainingTime-${employee.id}">${formatRemainingTime(remainingHours)}</td>
-          <td style='text-align: center;'>${employee?.las?.uStatus === 'WFH' ? '<i class="fa fa-home"></i>' : '<i class="fa fa-building"></i>'}</td>
+          <!-- <td style='text-align: center;'>${employee?.las?.uStatus === 'WFH' ? '<i class="fa fa-home"></i>' : '<i class="fa fa-building"></i>'}</td>-->
           <td style='text-align: center;'><span class="dot ${activity_badge}" style='color: transparent;'>${status}</span></td>
           `;
           tableBody.appendChild(row);
@@ -261,6 +261,7 @@
       const now = new Date(); // Current date and time
 
       employees.forEach(employee => {
+        if(!employee.stopped){
           employee.totalHours += 0.000277778
           const totalHours = 9; // Total available hours
           const remainingHours = Math.max(0, totalHours - employee.totalHours);
@@ -270,6 +271,7 @@
           if(remainingTimeCell){
             remainingTimeCell.textContent = formatRemainingTime(remainingHours);
           }
+        }
       });
     }
 
