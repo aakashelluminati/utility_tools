@@ -182,14 +182,14 @@
     function searchCarInfo(carNumber) {
       // var carNumber = document.getElementById("carNumberInput").value.toUpperCase();
       // var carNumber = "GJ01KJ6381"
-      var apiUrl = "https://web.cuvora.com/car/web/details/list?vehicle_num=" + carNumber.trim().toUpperCase();
-
-      var headers = {
-        "appversion": "251",
-        "deviceid": "ffee1d-df-d8bd-68af-aabe2b2156fe",
-        "src": "car-info_web",
-        "userid": "64953df2344a1d4a6b68f604"
-      };
+      // var apiUrl = "https://web.cuvora.com/car/web/details/list?vehicle_num=" + carNumber.trim().toUpperCase();
+      var apiUrl = `https://www.carinfo.app/_next/data/618pivaO3RC9DpfB1E9yQ/rc-details/${carNumber.trim().toUpperCase()}.json?rc=${carNumber.trim().toUpperCase()}`
+      // var headers = {
+      //   "appversion": "251",
+      //   "deviceid": "ffee1d-df-d8bd-68af-aabe2b2156fe",
+      //   "src": "car-info_web",
+      //   "userid": "64953df2344a1d4a6b68f604"
+      // };
 
       fetch(apiUrl, {
         headers: headers
