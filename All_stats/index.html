@@ -1,295 +1,635 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Data Table</title>
-  <!-- Include Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <!-- Include DataTables CSS -->
+  <title>Team Activity Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-2: #f3f4f8;
+      --border: #e6e8ef;
+      --text: #1a1d2b;
+      --text-muted: #6b7280;
+      --text-soft: #9aa0ad;
+      --primary: #5b6cff;
+      --primary-hover: #4a5bef;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #2563eb;
+      --warning-soft: #dbeafe;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; overflow-x: hidden; }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+    }
+    /* iOS Safari: prevent zoom-on-focus and reset default styles */
+    input, select, button { font-family: inherit; }
+    input[type="date"], input[type="search"], select { -webkit-appearance: none; appearance: none; }
+    input[type="search"]::-webkit-search-decoration,
+    input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+    select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%236b7280' d='M6 8L2 4h8z'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px !important;
     }
 
-    .container {
-      padding: 20px;
-    }
-
-    h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    /* Styling for the filter area */
-    .filter-area {
+    /* ───── Header ───── */
+    .app-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--primary), #8b7cff);
+      color: #fff;
+      display: grid; place-items: center;
+      font-size: 18px;
+    }
+    .brand h1 {
+      margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
+    }
+    .brand-sub {
+      margin: 0; font-size: 12px; color: var(--text-muted);
+    }
+    .btn-icon {
+      width: 38px; height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      display: grid; place-items: center;
+      transition: all 0.15s;
+    }
+    .btn-icon:hover { background: var(--surface-2); border-color: #d4d7e0; }
+    .btn-icon.spinning i { animation: spin 0.6s linear; }
+    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+    /* ───── Main ───── */
+    .main { max-width: 1280px; margin: 0 auto; padding: 24px 28px 48px; }
+
+    /* ───── Stats ───── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    }
+    .stat-card.stat-active::before { background: var(--success); }
+    .stat-card.stat-meeting::before { background: var(--warning); }
+    .stat-card.stat-stopped::before { background: var(--danger); }
+    .stat-card.stat-total::before { background: var(--primary); }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .filter-area select {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+    /* ───── Toolbar ───── */
+    .toolbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
     }
-
-    /* Styling for the DataTable */
-    table {
-      border-collapse: collapse;
+    .toolbar-left { display: flex; gap: 12px; flex-wrap: wrap; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .field input[type="date"],
+    .field select {
+      padding: 8px 12px;
+      height: 38px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input[type="date"]:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
+    }
+    .search-wrap {
+      position: relative;
+      width: 280px;
+    }
+    .search-wrap i {
+      position: absolute;
+      left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+    .search-wrap input {
       width: 100%;
-      border: 1px solid #ddd;
+      height: 38px;
+      padding: 8px 12px 8px 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
     }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+    /* ───── Table card ───── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    table#employeeTable.modern-table {
+      width: 100% !important;
+      border-collapse: collapse;
+      border: none;
+      margin: 0 !important;
+    }
+    .modern-table thead th {
+      background: var(--surface-2) !important;
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      padding: 12px 18px !important;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
       text-align: left;
     }
+    .modern-table tbody td {
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      padding: 14px 18px !important;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+    .modern-table tbody tr {
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .modern-table tbody tr:hover { background: var(--surface-2); }
+    .modern-table tbody tr:last-child td { border-bottom: none !important; }
 
-    th {
-      background-color: #f2f2f2;
-      font-weight: bold;
+    /* DataTables sort indicators */
+    table.dataTable thead .sorting,
+    table.dataTable thead .sorting_asc,
+    table.dataTable thead .sorting_desc {
+      background-image: none !important;
+      cursor: pointer;
+      position: relative;
+      padding-right: 28px !important;
+    }
+    table.dataTable thead .sorting::after,
+    table.dataTable thead .sorting_asc::after,
+    table.dataTable thead .sorting_desc::after {
+      content: '\f0dc';
+      font-family: FontAwesome;
+      position: absolute;
+      right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-soft);
+      opacity: 0.5;
+      font-size: 11px;
+    }
+    table.dataTable thead .sorting_asc::after {
+      content: '\f0de'; color: var(--primary); opacity: 1;
+    }
+    table.dataTable thead .sorting_desc::after {
+      content: '\f0dd'; color: var(--primary); opacity: 1;
     }
 
-    /* Custom class for the dot */
-    .dot {
-      height: 20px;
-      width: 20px;
+    /* Mono columns for numeric data */
+    .mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .name-cell { font-weight: 500; color: var(--text); }
+    .remaining-zero { color: var(--success); font-weight: 600; }
+
+    /* Status pill */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .status-pill::before {
+      content: '';
+      width: 6px; height: 6px;
       border-radius: 50%;
-      display: inline-block;
     }
+    .status-active { background: var(--success-soft); color: var(--success); }
+    .status-active::before { background: var(--success); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18); }
+    .status-meeting { background: var(--warning-soft); color: var(--warning); }
+    .status-meeting::before { background: var(--warning); }
+    .status-stopped { background: var(--danger-soft); color: var(--danger); }
+    .status-stopped::before { background: var(--danger); }
 
-    .green-dot {
-      background-color: green;
+    /* Empty / loading states */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
     }
+    .empty-state i { font-size: 32px; opacity: 0.4; margin-bottom: 12px; }
 
-    .red-dot {
-      background-color: red;
+    /* Hide default DataTables filter (we use our own search box) */
+    .dataTables_filter, .dataTables_info { display: none !important; }
+    .dataTables_wrapper { padding: 0 !important; }
+
+    /* ───── Popup / Modal ───── */
+    .popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      animation: fadeIn 0.15s ease;
     }
-
-    .blue-dot {
-      background-color: rgb(19, 192, 245);
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .popup-content {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 24px 28px;
+      width: min(90vw, 820px);
+      max-height: 85vh;
+      overflow: auto;
+      box-shadow: var(--shadow-lg);
     }
-
-    /* Styling for the "Apply Filter" button */
-    #applyFilterBtn {
-      padding: 8px 16px;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
+    #closePopup {
+      position: absolute;
+      top: 16px; right: 18px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      color: var(--text-muted);
+      display: grid; place-items: center;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: all 0.15s;
+      font-size: 14px;
+    }
+    #closePopup:hover { background: var(--danger-soft); color: var(--danger); }
+
+    .session-end-time {
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      margin: 12px 0 18px;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(91, 108, 255, 0.08), rgba(22, 163, 74, 0.08));
+      border-radius: var(--radius-sm);
+      color: var(--text);
     }
 
-    #applyFilterBtn:hover {
-      background-color: #0056b3;
+    /* Timeline bar */
+    #timeline {
+      margin: 8px 0 18px;
+      width: 100%;
+      position: relative;
+      height: 28px;
+      background: var(--surface-2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    #timeline div {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), #22c55e);
     }
 
-    /* Styling for the "Apply Filter" button */
-    #refresh {
-      padding: 8px 16px;
-      background-color: #09b141;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.3s;
+    /* Activity breakdown table */
+    .activity_breakdown {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .activity_breakdown th {
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity_breakdown td {
+      padding: 10px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .activity_breakdown tbody tr:last-child td { border-bottom: none; }
+    .activity_breakdown tbody tr:hover { background: var(--surface-2); }
+    .activity_breakdown tbody tr.meeting {
+      background: var(--warning-soft) !important;
+    }
+    .activity_breakdown tbody tr.meeting:hover { background: #c7defe !important; }
+
+    /* ─────────────────────────────────────────
+       RESPONSIVE
+       ───────────────────────────────────────── */
+
+    /* Tablet (≤1024px) */
+    @media (max-width: 1024px) {
+      .main { padding: 20px 18px 40px; }
+      .stat-value { font-size: 22px; }
     }
 
-    #refresh:hover {
-      background-color: #079235;
+    /* Small tablet / large phone (≤768px) */
+    @media (max-width: 768px) {
+      .main { padding: 14px 12px 28px; }
+      .app-header { padding: 12px 16px; }
+      .brand-icon { width: 34px; height: 34px; font-size: 15px; }
+      .brand h1 { font-size: 15px; }
+      .brand-sub { font-size: 11px; }
+
+      /* Compact stats — 3 in a row, tight padding */
+      .stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+      .stat-card {
+        padding: 8px 8px 8px 11px;
+        gap: 2px;
+        border-radius: 8px;
+      }
+      .stat-card::before { width: 3px; }
+      .stat-label {
+        font-size: 9px;
+        letter-spacing: 0.04em;
+      }
+      .stat-value {
+        font-size: 17px;
+        line-height: 1.1;
+      }
+
+      /* Toolbar stacks */
+      .toolbar { gap: 10px; margin-bottom: 12px; }
+      .toolbar-left { width: 100%; gap: 8px; }
+      .toolbar-left .field { flex: 1; min-width: 0; }
+      .toolbar-left .field input,
+      .toolbar-left .field select { width: 100%; }
+      .toolbar-right { width: 100%; }
+      .search-wrap { width: 100%; }
+
+      /* Compact table — keep table layout, tight rows */
+      .modern-table thead th {
+        padding: 8px 8px !important;
+        font-size: 9.5px;
+        letter-spacing: 0.04em;
+      }
+      .modern-table tbody td {
+        padding: 10px 8px !important;
+        font-size: 12.5px;
+        vertical-align: middle;
+      }
+      /* Fixed widths on numeric/status columns → name column takes remaining space */
+      .modern-table thead th:nth-child(2),
+      .modern-table tbody td:nth-child(2),
+      .modern-table thead th:nth-child(3),
+      .modern-table tbody td:nth-child(3) { width: 56px; }
+      .modern-table thead th:nth-child(4),
+      .modern-table tbody td:nth-child(4) { width: 80px; }
+      .name-cell { word-break: break-word; }
+      .mono { font-size: 12px; }
+      .status-pill {
+        padding: 3px 7px;
+        font-size: 11px;
+        gap: 4px;
+      }
+      .status-pill::before { width: 5px; height: 5px; }
+
+      .popup-content { width: 94vw; padding: 18px 16px; max-height: 90vh; }
+      .activity_breakdown th { padding: 8px 10px; font-size: 10px; }
+      .activity_breakdown td { padding: 8px 10px; font-size: 12px; }
     }
 
+    /* Phone (≤480px) — even tighter */
+    @media (max-width: 480px) {
+      .stat-card { padding: 7px 7px 7px 10px; }
+      .stat-label { font-size: 8.5px; }
+      .stat-value { font-size: 15px; }
 
-.activity_breakdown {
-    margin: auto;
-    
-    border-collapse: collapse;
-    width: 50%;
-    margin-bottom: 1rem;
-    background-color: #fff;
-    color: #212529;
-    border: 1px solid #dee2e6;
-}
-  
-.activity_breakdown th,
-.activity_breakdown td {
-    padding: 0.75rem;
-    vertical-align: top;
-    text-align: left;
-    border-top: 1px solid #dee2e6;
-}
-  
+      .modern-table thead th { padding: 7px 6px !important; font-size: 9px; }
+      .modern-table tbody td { padding: 9px 6px !important; font-size: 12px; }
+      .mono { font-size: 11.5px; }
+      .status-pill { padding: 2px 6px; font-size: 10.5px; }
 
-.activity_breakdown th {
-    font-weight: bold;
-    text-align: left;
-    background-color: #4CAF50;
-    color: #fff;
+      /* Modal near-fullscreen on phone */
+      .popup-content {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        top: 0; left: 0;
+        transform: none;
+        padding: 18px 14px;
+      }
+      #closePopup { top: 14px; right: 14px; }
+      .session-end-time { font-size: 15px; padding: 10px; }
+    }
 
+    /* Tiny phone (≤360px) — last-resort compaction */
+    @media (max-width: 360px) {
+      .brand-sub { display: none; }
+      .stats { gap: 5px; }
+      .stat-card { padding: 6px 6px 6px 9px; }
+      .stat-value { font-size: 14px; }
+      .stat-label { font-size: 8px; }
+      .modern-table tbody td { padding: 8px 5px !important; font-size: 11.5px; }
+      .modern-table thead th { padding: 6px 5px !important; }
+      .status-pill { padding: 2px 5px; font-size: 10px; }
+    }
 
-}
-.activity_breakdown tbody tr {
-    background-color: #f2f2f2;
-}
-.activity_breakdown tbody tr.meeting{
-    background-color: #4caf505e !important;
-}
-
-#timeline {
-    margin: auto;
-    left: 0;
-    width: 80%;
-    position: relative;
-    height: 30px;
-    background-color: #a5a5a5;
-}
-#timeline div {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    line-height: 50px;
-}
-
-.popup {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
-}
-
-.popup-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  max-height: 70%;
-  border-radius: 5px;
-  overflow: auto;
-}
-
-.close-popup-button {
-  display: block;
-  margin-top: 10px;
-  cursor: pointer;
-}
-.session-end-time {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin: 0;
-    /* padding: 20px 0; */
-    /* border-radius: 10px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); */
-}
+    /* Touch targets: bigger inputs on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .field input[type="date"],
+      .field select,
+      .search-wrap input { height: 42px; font-size: 14px; }
+      .btn-icon { width: 42px; height: 42px; }
+      .modern-table tbody tr { min-height: 56px; }
+    }
   </style>
 </head>
 <body>
 
   <div id="popup" class="popup">
     <div class="popup-content">
-      <i id="closePopup" class="fa fa-close" style="float: right;"></i>
-      <div >
-        <!-- Content of the timeline div -->
-        <div id="timeline" style="display: none;"></div><br>
-      
-        <p id="end-time" class="session-end-time"></p>
-        
-        <table id="myTable" class="activity_breakdown">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Duration</th>
-                <th>Task</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-      </div>
+      <i id="closePopup" class="fa fa-close"></i>
+      <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 600;">Activity Breakdown</h3>
+      <div id="timeline" style="display: none;"></div>
+      <p id="end-time" class="session-end-time"></p>
+      <table id="myTable" class="activity_breakdown">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Duration</th>
+            <th>Task</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
-  
 
-  <div class="container">
-    <div class="filter-area">
-
-     
-      <!-- <input type="date" id="datepicker"><br> -->
-      
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa fa-bolt"></i></div>
       <div>
-        <label for="activityStatus">Status:</label>
-        <select id="activityStatus">
-          <option value="all">All</option>
-          <option value="active">Active</option>
-          <option value="meeting">Meeting</option>
-          <option value="stopped">Stopped</option>
-        </select>
-        <button id="applyFilterBtn" onclick="filterTable()">Apply Filter</button>
-        <button id="refresh" onclick="reload()">Reload</button>
+        <h1>Team Activity</h1>
+        <p class="brand-sub">Live employee time tracking</p>
       </div>
     </div>
-    <table id="employeeTable" class="table table-striped" style="width: 100%;">
-      <thead>
-        <tr>
-          <!-- <th>#</th> -->
-          <th>Name</th>
-          <th>Time</th>
-          <th>Left</th>
-          <!-- <th>Mode</th> -->
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Employee data will be dynamically inserted here -->
-      </tbody>
-    </table>
-  </div>
+    <button id="refresh" class="btn-icon" onclick="reload()" title="Reload">
+      <i class="fa fa-refresh"></i>
+    </button>
+  </header>
+
+  <main class="main">
+    <section class="stats">
+      <div class="stat-card stat-active">
+        <span class="stat-label">Active</span>
+        <span class="stat-value" id="statActive">0</span>
+      </div>
+      <div class="stat-card stat-meeting">
+        <span class="stat-label">In Meeting</span>
+        <span class="stat-value" id="statMeeting">0</span>
+      </div>
+      <div class="stat-card stat-stopped">
+        <span class="stat-label">Stopped</span>
+        <span class="stat-value" id="statStopped">0</span>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="field">
+          <label for="datepicker">Date</label>
+          <input type="date" id="datepicker" onchange="changeDate()">
+        </div>
+        <div class="field">
+          <label for="activityStatus">Status</label>
+          <select id="activityStatus" onchange="filterTable()">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="meeting">Meeting</option>
+            <option value="stopped">Stopped</option>
+          </select>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <div class="search-wrap">
+          <i class="fa fa-search"></i>
+          <input type="search" id="searchInput" placeholder="Search by name…" oninput="searchTable()">
+        </div>
+      </div>
+    </section>
+
+    <section class="table-card">
+      <table id="employeeTable" class="modern-table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Worked</th>
+            <th>Remaining</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
 
   <!-- Include jQuery and DataTables JavaScript -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script>
 
-// function getDate() {
-//     var date = document.getElementById("datepicker").value; 
-
-//     console.log(new Date(date))
-//     var milliseconds = new Date(date).getTime();
-//     start_date = milliseconds;
-//     end_date = start_date + 86400000;
-// }
-// Function to set current date in datepicker
-// function setCurrentDate() {
-//     const currentDate = new Date();
-//     const year = currentDate.getFullYear();
-//     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-//     const day = currentDate.getDate().toString().padStart(2, "0");
-//     const formattedDate = `${year}-${month}-${day}`;
-
-//     if(document.getElementById("datepicker")){
-//         document.getElementById("datepicker").value = formattedDate;
-//     }
-// }
-
     let employees = []; // To store the fetched employee data
     let dataTable; // To store the DataTable instance
-
-    // Function to fetch data from the API and populate the table
 
 
   const today = new Date();
@@ -298,24 +638,64 @@
   today.setSeconds(0);
   today.setMilliseconds(0);
 
-  
+
   var milliseconds = new Date(today).getTime();
   let start_date = milliseconds;
   let end_date = start_date + 86400000;
-  // setCurrentDate();
+  let isToday = true; // gates the live 1s/sec counter to today only
+
+  function setDatepickerToToday() {
+    const el = document.getElementById("datepicker");
+    console.log("[setDatepickerToToday] datepicker element:", el);
+    if (!el) {
+      console.error("[setDatepickerToToday] #datepicker not found in DOM");
+      return;
+    }
+    const y = today.getFullYear();
+    const m = (today.getMonth() + 1).toString().padStart(2, "0");
+    const d = today.getDate().toString().padStart(2, "0");
+    const formatted = `${y}-${m}-${d}`;
+    el.value = formatted;
+    console.log("[setDatepickerToToday] set value to:", formatted, "today ms:", today.getTime());
+  }
+
+  async function changeDate() {
+    console.log("[changeDate] fired");
+    const el = document.getElementById("datepicker");
+    const picked = el ? el.value : null;
+    console.log("[changeDate] picked value:", picked);
+    if (!picked) {
+      console.warn("[changeDate] empty value, aborting");
+      return;
+    }
+    const [y, m, d] = picked.split("-").map(Number);
+    const selected = new Date(y, m - 1, d, 0, 0, 0, 0);
+    start_date = selected.getTime();
+    end_date = start_date + 86400000;
+    isToday = start_date === today.getTime();
+    console.log("[changeDate] selected Date:", selected.toString());
+    console.log("[changeDate] start_date:", start_date, new Date(start_date).toString());
+    console.log("[changeDate] end_date:", end_date, new Date(end_date).toString());
+    console.log("[changeDate] isToday:", isToday);
+    await reload();
+    console.log("[changeDate] reload complete");
+  }
 
   async function reload() {
-    await fetchEmployeeData()
-    filterTable();    
+    console.log("[reload] start — start_date:", start_date, "end_date:", end_date);
+    const btn = document.getElementById("refresh");
+    btn?.classList.add("spinning");
+    await fetchEmployeeData();
+    console.log("[reload] fetchEmployeeData done, employees length:", employees?.length);
+    filterTable();
+    setTimeout(() => btn?.classList.remove("spinning"), 600);
+    console.log("[reload] filterTable done");
   }
 
     async function fetchEmployeeData() {
       try {
-        // getDate();
-
-      // alert(start_date) 
         let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime="+start_date+"&endTime="+end_date+"&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
-        // let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/report_view_accounts?light=true&onlyActive=true"
+        console.log("[fetchEmployeeData] URL:", url);
         const response = await fetch(url, {
           headers: {
             "accept": "application/json, text/plain, */*",
@@ -335,18 +715,40 @@
           method: "GET"
         });
 
+        console.log("[fetchEmployeeData] HTTP status:", response.status, response.statusText);
+        if (!response.ok) {
+          const text = await response.text();
+          console.error("[fetchEmployeeData] non-OK response body:", text);
+          return;
+        }
         respomse = await response.json();
+        console.log("[fetchEmployeeData] raw response:", respomse);
         employees = respomse?.employeeTimeReport?.timeReportItems
+        console.log("[fetchEmployeeData] employees parsed:", employees?.length, "items");
+        if (!employees || employees.length === 0) {
+          console.warn("[fetchEmployeeData] no timeReportItems for this date range");
+        }
         populateTable(employees); // Populate the table initially with all employees
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("[fetchEmployeeData] threw:", error);
       }
     }
 
     // Function to populate the table with employee data
     function populateTable(data) {
+      console.log("[populateTable] called with", data?.length, "items; dataTable initialized?", !!dataTable);
       const tableBody = document.querySelector("#employeeTable tbody");
-      tableBody.innerHTML = "";
+      if (!tableBody) {
+        console.error("[populateTable] tbody not found");
+        return;
+      }
+      // If DataTable is already initialized, clear via its API so internal state stays in sync
+      if (dataTable) {
+        console.log("[populateTable] clearing DataTable rows via API");
+        dataTable.clear();
+      } else {
+        tableBody.innerHTML = "";
+      }
       const now = new Date(); // Current date and time
 
       data.forEach((employee, index) => {
@@ -382,24 +784,47 @@
           const remainingHours = Math.max(0, totalHours - employee.totalHours);
 
 
-          let mode = employee?.las?.uStatus!=undefined ?  employee?.las?.uStatus : ""
+          const remainingCls = remainingHours === 0 ? 'mono remaining-zero' : 'mono';
           row.innerHTML = `
-          <!-- <td>${index + 1}</td> -->
-          <td>${employee.title}</td>
-          <td>${formatHoursToMinutes(employee.totalHours)}</td>
-          <td id="remainingTime-${employee.id}">${formatRemainingTime(remainingHours)}</td>
-          <!-- <td style='text-align: center;'>${employee?.las?.uStatus === 'WFH' ? '<i class="fa fa-home"></i>' : '<i class="fa fa-building"></i>'}</td>-->
-          <td style='text-align: center;'><span class="dot ${activity_badge}" style='color: transparent;'>${status}</span></td>
+          <td class="name-cell">${employee.title}</td>
+          <td class="mono">${formatHoursToMinutes(employee.totalHours)}</td>
+          <td class="${remainingCls}" id="remainingTime-${employee.id}">${formatRemainingTime(remainingHours)}</td>
+          <td><span class="status-pill status-${status}">${status}</span></td>
           `;
           row.addEventListener("click", function () {
             show_activity_breakdown(employee.id)
           });
-          
-          tableBody.appendChild(row);
-      });
-      // updateRemainingTime();
 
+          if (dataTable) {
+            dataTable.row.add(row);
+          } else {
+            tableBody.appendChild(row);
+          }
+      });
+      if (dataTable) {
+        console.log("[populateTable] drawing DataTable with", data?.length, "rows");
+        dataTable.draw(false);
       }
+      updateStats(data);
+      console.log("[populateTable] done");
+      }
+
+    function updateStats(data) {
+      let active = 0, meeting = 0, stopped = 0;
+      (data || []).forEach(e => {
+        if (e.stopped) stopped++;
+        else if (e?.las?.tStatus === 'meeting') meeting++;
+        else active++;
+      });
+      document.getElementById('statActive').textContent = active;
+      document.getElementById('statMeeting').textContent = meeting;
+      document.getElementById('statStopped').textContent = stopped;
+    }
+
+    function searchTable() {
+      const term = document.getElementById('searchInput').value;
+      if (dataTable) dataTable.search(term).draw();
+    }
 
     function formatRemainingTime(totalHours) {
       const hours = Math.floor(totalHours);
@@ -411,6 +836,7 @@
 
 
     function updateRemainingTime() {
+      if (!isToday) return; // don't tick forward on historical dates
       console.log(updateRemainingTime);
       const now = new Date(); // Current date and time
 
@@ -419,8 +845,6 @@
           employee.totalHours += 0.000277778
           const totalHours = 8; // Total available hours
           const remainingHours = Math.max(0, totalHours - employee.totalHours);
-          // const totalMinutes = employee.totalHours * 60;
-          // const remainingMinutes = Math.max(0, totalMinutes - now.getHours() * 60 - now.getMinutes());
           const remainingTimeCell = document.getElementById(`remainingTime-${employee.id}`);
           if(remainingTimeCell){
             remainingTimeCell.textContent = formatRemainingTime(remainingHours);
@@ -461,58 +885,29 @@
       return formattedString;
     }
 
-    // Function to filter the table based on the search input
-    // function filterTable() {
-    //   const searchTerm = document.getElementById("search").value.trim().toLowerCase();
-    //   const filteredEmployees = employees.filter(employee => {
-    //     return employee.title.toLowerCase().includes(searchTerm);
-    //   });
-    //   populateTable(filteredEmployees);
-    // }
-
     function filterTable() {
-      const searchTerm = "";
       const selectedStatus = document.getElementById("activityStatus").value;
-      
-      if (dataTable) {
-        console.log("filterTable");
-        dataTable.search(searchTerm).draw();
-
-        if (selectedStatus !== "all") {
-          console.log("filterTable");
-          dataTable.column(3).search(selectedStatus).draw();
-        }else{
-          dataTable.column(3).search("").draw();
-        }
+      if (!dataTable) return;
+      if (selectedStatus !== "all") {
+        dataTable.column(3).search(selectedStatus).draw();
+      } else {
+        dataTable.column(3).search("").draw();
       }
     }
 
   // Function to initialize DataTable on the employee table
   function initializeDataTable() {
     dataTable = $('#employeeTable').DataTable({
-      // Add DataTable options here, e.g., sorting, searching, pagination
-      // For example:
-      "order": [[1, "asc"]], // Sort by the second column (Name) in ascending order
-      "paging": false, // Enable pagination
-      "searching": true, // Enable searching/filtering
-      "stripeClasses": [], // Disable default odd-even row coloring
-      "drawCallback": function (settings) {
-        // After each draw, apply the "stopped-row" class to rows with employee.stopped true
-        $('#employeeTable tbody tr').each(function () {
-          if ($(this).find('td:eq(3)').text() === 'true') {
-            $(this).addClass('stopped-row');
-          } else {
-            $(this).removeClass('stopped-row');
-          }
-        });
-      }
+      "order": [[1, "desc"]],   // Sort by "Worked" hours, highest first
+      "paging": false,
+      "searching": true,
+      "info": false,
+      "stripeClasses": [],
+      "language": { "emptyTable": "No employees match the current filters." }
     });
   }
 
   async function show_activity_breakdown(id) {
-    // id = "add053c09e694d58b81b5db75bad60b3"
-    // getDate();
-    // alert(start_date)
     let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + id;
     const response = await fetch(url, {
           headers: {
@@ -608,10 +1003,6 @@
     for (var i = 0; i < breakData.length; i++) {
         var session = breakData[i];
 
-        // Calculate the session duration and total duration including break time
-        var sessionDuration = new Date(session.endTime) - new Date(session.startTime);
-        // var totalDuration = sessionDuration + session.breakTime * 60 * 60 * 1000;
-
         // Calculate the start and end positions of the session in the timeline
         var startPosition = ((session.startTime - breakData[0].startTime) / totalDuration) * 100;
         var endPosition = ((session.endTime - breakData[0].startTime) / totalDuration) * 100;
@@ -665,7 +1056,10 @@ function decimalHoursToHoursMinutes(decimalHours) {
 }
 
   // Call the function to fetch and populate data when the page loads
+  console.log("[init] page load — today:", today.toString(), "start_date:", start_date, "end_date:", end_date);
+  setDatepickerToToday();
   fetchEmployeeData().then(() => {
+    console.log("[init] initial fetch done, initializing DataTable");
     initializeDataTable(); // Initialize DataTable after the data is loaded
   });
 

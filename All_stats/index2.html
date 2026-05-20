@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Data Table</title>
+  <!-- Include Bootstrap and DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { padding: 20px; }
+    h1 { font-size: 24px; margin-bottom: 20px; }
+    .filter-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .filter-area select, .filter-area input[type="date"] { padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+    table { border-collapse: collapse; width: 100%; border: 1px solid #ddd; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; font-weight: bold; }
+    .dot { height: 20px; width: 20px; border-radius: 50%; display: inline-block; }
+    .green-dot { background-color: green; }
+    .red-dot { background-color: red; }
+    .blue-dot { background-color: rgb(19, 192, 245); }
+    #applyFilterBtn, #refresh { padding: 8px 16px; background-color: #007bff; border: none; border-radius: 5px; color: #fff; cursor: pointer; transition: background-color 0.3s; }
+    #applyFilterBtn:hover, #refresh:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="filter-area">
+    <input type="date" id="datepicker" onchange="reload()">
+    <div>
+      <label for="activityStatus">Status:</label>
+      <select id="activityStatus">
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="meeting">Meeting</option>
+        <option value="stopped">Stopped</option>
+      </select>
+      <button id="applyFilterBtn" onclick="filterTable()">Apply Filter</button>
+      <button id="refresh" onclick="reload()">Reload</button>
+    </div>
+  </div>
+  <table id="employeeTable" class="table table-striped" style="width:100%;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Time</th>
+        <th>Left</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Include jQuery and DataTables JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+let employees = [];
+let dataTable;
+
+async function fetchEmployeeData() {
+  const datepicker = document.getElementById('datepicker').value;
+  const date = new Date(datepicker);
+  const start_date = date.setHours(0, 0, 0, 0);
+  const end_date = new Date(date.getTime() + 86400000).setHours(0, 0, 0, 0); // Make sure this is in milliseconds or convert to seconds if needed
+
+  try {
+    const url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=${start_date}&endTime=${end_date}&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL`;
+    const response = await fetch(url, {
+      headers: {
+        "accept": "application/json, text/plain, */*",
+        "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+      },
+      method: "GET"
+    });
+    const data = await response.json();
+    employees = data.employeeTimeReport.timeReportItems;
+    populateTable(employees);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+function populateTable(data) {
+  const tableBody = document.querySelector("#employeeTable tbody");
+  tableBody.innerHTML = "";
+  data.forEach((employee, index) => {
+    console.log(employee);
+    const row = document.createElement("tr");
+    // row.innerHTML = `<td>${employee.title}</td><td>${employee.time}</td><td>${employee.left}</td><td>${employee.status}</td>`;
+
+    let activity_badge = 'green-dot'
+          let status = 'active'
+          if(employee.stopped) { 
+            activity_badge = 'red-dot';
+            status = 'stopped'
+          }else{
+            if(employee?.las?.tStatus == 'meeting'){
+              activity_badge = 'blue-dot';
+              status = 'meeting'
+            }else if(employee?.las?.tStatus == 'active'){
+              activity_badge = 'green-dot';
+              status = 'active'
+
+            }
+          }
+    employee.totalHours += 0.000277778
+          const totalHours = 8; // Total available hours
+          const remainingHours = Math.max(0, totalHours - employee.totalHours);
+  row.innerHTML = `
+        <!-- <td>${index + 1}</td> -->
+        <td>${employee.title}</td>
+        <td>${formatHoursToMinutes(employee.totalHours)}</td>
+        <td id="remainingTime-${employee.id}">${formatRemainingTime(remainingHours)}</td>
+        <!-- <td style='text-align: center;'>${employee?.las?.uStatus === 'WFH' ? '<i class="fa fa-home"></i>' : '<i class="fa fa-building"></i>'}</td>-->
+        <td style='text-align: center;'><span class="dot ${activity_badge}" style='color: transparent;'>${status}</span></td>
+        `;
+    tableBody.appendChild(row);
+  });
+  if (!dataTable) {
+    initializeDataTable();
+  } else {
+    dataTable.clear().rows.add(data).draw();
+  }
+}
+
+function formatHoursToMinutes(decimalHours) {
+      // Convert decimal hours to total minutes
+      const totalMinutes = decimalHours * 60;
+
+      // Extract hours and minutes from the totalMinutes
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
+
+      // Format hours and minutes to two-digit format
+      const formattedHours = hours.toString().padStart(2, '0');
+      const formattedMinutes = minutes.toString().padStart(2, '0');
+
+      // Create the formatted string
+      const formattedString = `${formattedHours}:${formattedMinutes}`;
+
+      return formattedString;
+    }
+
+function formatRemainingTime(totalHours) {
+      const hours = Math.floor(totalHours);
+      const remainingMinutes = (totalHours - hours) * 60;
+      const minutes = Math.floor(remainingMinutes);
+      const seconds = Math.round((remainingMinutes - minutes) * 60);
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+
+function initializeDataTable() {
+  dataTable = $('#employeeTable').DataTable({
+    "order": [[1, "asc"]],
+    "paging": false,
+    "searching": true,
+    "stripeClasses": []
+  });
+}
+
+function reload() {
+  fetchEmployeeData();
+  filterTable();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date();
+  document.getElementById('datepicker').valueAsDate = today;
+  fetchEmployeeData();
+});
+</script>
+
+</body>
+</html>

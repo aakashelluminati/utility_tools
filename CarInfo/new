@@ -1,0 +1,21 @@
+curl 'https://www.carinfo.app/_next/data/618pivaO3RC9DpfB1E9yQ/rc-details/GJ01KJ6381.json?rc=GJ01KJ6381' \
+  -H 'authority: www.carinfo.app' \
+  -H 'accept: */*' \
+  -H 'accept-language: en-GB,en-US;q=0.9,en;q=0.8' \
+  -H 'cache-control: no-cache' \
+  -H 'cookie: deviceId=8d855c25-d221-42b6-8ada-82087694da3e; userId=657c616f1578885cf3ca330d; _gid=GA1.2.2093102968.1702650225; _ga=GA1.1.1080948029.1702650225; _clck=hlnvvu%7C2%7Cfhk%7C0%7C1444; _clsk=11qlhkn%7C1702650226625%7C1%7C1%7Co.clarity.ms%2Fcollect; _ga_MTH4BJD08V=GS1.1.1702650225.1.0.1702650233.0.0.0' \
+  -H 'pragma: no-cache' \
+  -H 'referer: https://www.carinfo.app/rc-search' \
+  -H 'sec-ch-ua: "Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Linux"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36' \
+  -H 'x-nextjs-data: 1' \
+  --compressed
+
+
+
+  https://www.carinfo.app/_next/data/618pivaO3RC9DpfB1E9yQ/rc-details/GJ01KJ6381.json?rc=GJ01KJ6381
