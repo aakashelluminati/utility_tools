@@ -1,790 +1,1039 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Activity Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <style>
-    :root {
-      --bg: #f6f7fb;
-      --surface: #ffffff;
-      --surface-2: #f3f4f8;
-      --border: #e6e8ef;
-      --text: #1a1d2b;
-      --text-muted: #6b7280;
-      --text-soft: #9aa0ad;
-      --primary: #5b6cff;
-      --primary-hover: #4a5bef;
-      --success: #16a34a;
-      --success-soft: #dcfce7;
-      --warning: #2563eb;
-      --warning-soft: #dbeafe;
-      --danger: #dc2626;
-      --danger-soft: #fee2e2;
-      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
-      --radius: 10px;
-      --radius-sm: 6px;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Activity Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --surface-2: #f3f4f8;
+        --border: #e6e8ef;
+        --text: #1a1d2b;
+        --text-muted: #6b7280;
+        --text-soft: #9aa0ad;
+        --primary: #5b6cff;
+        --primary-hover: #4a5bef;
+        --success: #16a34a;
+        --success-soft: #dcfce7;
+        --warning: #2563eb;
+        --warning-soft: #dbeafe;
+        --danger: #dc2626;
+        --danger-soft: #fee2e2;
+        --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+        --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+        --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
+        --radius: 10px;
+        --radius-sm: 6px;
+      }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; overflow-x: hidden; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      -webkit-text-size-adjust: 100%;
-    }
-    /* iOS Safari: prevent zoom-on-focus and reset default styles */
-    input, select, button { font-family: inherit; }
-    input[type="date"], input[type="search"], select { -webkit-appearance: none; appearance: none; }
-    input[type="search"]::-webkit-search-decoration,
-    input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-    select {
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%236b7280' d='M6 8L2 4h8z'/></svg>");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      padding-right: 30px !important;
-    }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-size-adjust: 100%;
+      }
+      /* iOS Safari: prevent zoom-on-focus and reset default styles */
+      input,
+      select,
+      button {
+        font-family: inherit;
+      }
+      input[type="date"],
+      input[type="search"],
+      select {
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      input[type="search"]::-webkit-search-decoration,
+      input[type="search"]::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+      }
+      select {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%236b7280' d='M6 8L2 4h8z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 30px !important;
+      }
 
-    /* ───── Header ───── */
-    .app-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 28px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-icon {
-      width: 38px; height: 38px;
-      border-radius: var(--radius-sm);
-      background: linear-gradient(135deg, var(--primary), #8b7cff);
-      color: #fff;
-      display: grid; place-items: center;
-      font-size: 18px;
-    }
-    .brand h1 {
-      margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em;
-    }
-    .brand-sub {
-      margin: 0; font-size: 12px; color: var(--text-muted);
-    }
-    .btn-icon {
-      width: 38px; height: 38px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      display: grid; place-items: center;
-      transition: all 0.15s;
-    }
-    .btn-icon:hover { background: var(--surface-2); border-color: #d4d7e0; }
-    .btn-icon.spinning i { animation: spin 0.6s linear; }
-    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+      /* ───── Header ───── */
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 28px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: var(--radius-sm);
+        background: linear-gradient(135deg, var(--primary), #8b7cff);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+      }
+      .brand h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .brand-sub {
+        margin: 0;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .btn-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        transition: all 0.15s;
+      }
+      .btn-icon:hover {
+        background: var(--surface-2);
+        border-color: #d4d7e0;
+      }
+      .btn-icon.spinning i {
+        animation: spin 0.6s linear;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-    /* ───── Main ───── */
-    .main { max-width: 1280px; margin: 0 auto; padding: 24px 28px 48px; }
+      /* ───── Main ───── */
+      .main {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px 28px 48px;
+      }
 
-    /* ───── Stats ───── */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: var(--shadow-sm);
-      display: flex; flex-direction: column; gap: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-    }
-    .stat-card.stat-active::before { background: var(--success); }
-    .stat-card.stat-meeting::before { background: var(--warning); }
-    .stat-card.stat-stopped::before { background: var(--danger); }
-    .stat-card.stat-total::before { background: var(--primary); }
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .stat-value {
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      font-family: 'JetBrains Mono', monospace;
-    }
+      /* ───── Stats ───── */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+      }
+      .stat-card.stat-active::before {
+        background: var(--success);
+      }
+      .stat-card.stat-meeting::before {
+        background: var(--warning);
+      }
+      .stat-card.stat-stopped::before {
+        background: var(--danger);
+      }
+      .stat-card.stat-total::before {
+        background: var(--primary);
+      }
+      .stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .stat-value {
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        font-family: "JetBrains Mono", monospace;
+      }
 
-    /* ───── Toolbar ───── */
-    .toolbar {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .toolbar-left { display: flex; gap: 12px; flex-wrap: wrap; }
-    .field { display: flex; flex-direction: column; gap: 4px; }
-    .field label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .field input[type="date"],
-    .field select {
-      padding: 8px 12px;
-      height: 38px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .field input[type="date"]:focus,
-    .field select:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
-    }
-    .search-wrap {
-      position: relative;
-      width: 280px;
-    }
-    .search-wrap i {
-      position: absolute;
-      left: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--text-soft);
-      font-size: 13px;
-    }
-    .search-wrap input {
-      width: 100%;
-      height: 38px;
-      padding: 8px 12px 8px 36px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text);
-      transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    .search-wrap input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
-    }
+      /* ───── Toolbar ───── */
+      .toolbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .toolbar-left {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .field label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .field input[type="date"],
+      .field select {
+        padding: 8px 12px;
+        height: 38px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--text);
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .field input[type="date"]:focus,
+      .field select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
+      }
+      .search-wrap {
+        position: relative;
+        width: 280px;
+      }
+      .search-wrap i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-soft);
+        font-size: 13px;
+      }
+      .search-wrap input {
+        width: 100%;
+        height: 38px;
+        padding: 8px 12px 8px 36px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--text);
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .search-wrap input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(91, 108, 255, 0.15);
+      }
 
-    /* ───── Table card ───── */
-    .table-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    table#employeeTable.modern-table {
-      width: 100% !important;
-      border-collapse: collapse;
-      border: none;
-      margin: 0 !important;
-    }
-    .modern-table thead th {
-      background: var(--surface-2) !important;
-      border: none !important;
-      border-bottom: 1px solid var(--border) !important;
-      padding: 12px 18px !important;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      text-align: left;
-    }
-    .modern-table tbody td {
-      border: none !important;
-      border-bottom: 1px solid var(--border) !important;
-      padding: 14px 18px !important;
-      font-size: 14px;
-      vertical-align: middle;
-    }
-    .modern-table tbody tr {
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-    .modern-table tbody tr:hover { background: var(--surface-2); }
-    .modern-table tbody tr:last-child td { border-bottom: none !important; }
+      /* ───── Table card ───── */
+      .table-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      table#employeeTable.modern-table {
+        width: 100% !important;
+        border-collapse: collapse;
+        border: none;
+        margin: 0 !important;
+      }
+      .modern-table thead th {
+        background: var(--surface-2) !important;
+        border: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        padding: 12px 18px !important;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        text-align: left;
+      }
+      .modern-table tbody td {
+        border: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        padding: 14px 18px !important;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+      .modern-table tbody tr {
+        cursor: pointer;
+        transition: background 0.12s;
+      }
+      .modern-table tbody tr:hover {
+        background: var(--surface-2);
+      }
+      .modern-table tbody tr:last-child td {
+        border-bottom: none !important;
+      }
 
-    /* DataTables sort indicators */
-    table.dataTable thead .sorting,
-    table.dataTable thead .sorting_asc,
-    table.dataTable thead .sorting_desc {
-      background-image: none !important;
-      cursor: pointer;
-      position: relative;
-      padding-right: 28px !important;
-    }
-    table.dataTable thead .sorting::after,
-    table.dataTable thead .sorting_asc::after,
-    table.dataTable thead .sorting_desc::after {
-      content: '\f0dc';
-      font-family: FontAwesome;
-      position: absolute;
-      right: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--text-soft);
-      opacity: 0.5;
-      font-size: 11px;
-    }
-    table.dataTable thead .sorting_asc::after {
-      content: '\f0de'; color: var(--primary); opacity: 1;
-    }
-    table.dataTable thead .sorting_desc::after {
-      content: '\f0dd'; color: var(--primary); opacity: 1;
-    }
+      /* DataTables sort indicators */
+      table.dataTable thead .sorting,
+      table.dataTable thead .sorting_asc,
+      table.dataTable thead .sorting_desc {
+        background-image: none !important;
+        cursor: pointer;
+        position: relative;
+        padding-right: 28px !important;
+      }
+      table.dataTable thead .sorting::after,
+      table.dataTable thead .sorting_asc::after,
+      table.dataTable thead .sorting_desc::after {
+        content: "\f0dc";
+        font-family: FontAwesome;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-soft);
+        opacity: 0.5;
+        font-size: 11px;
+      }
+      table.dataTable thead .sorting_asc::after {
+        content: "\f0de";
+        color: var(--primary);
+        opacity: 1;
+      }
+      table.dataTable thead .sorting_desc::after {
+        content: "\f0dd";
+        color: var(--primary);
+        opacity: 1;
+      }
 
-    /* Mono columns for numeric data */
-    .mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
-    .name-cell { font-weight: 500; color: var(--text); }
-    .remaining-zero { color: var(--success); font-weight: 600; }
+      /* Mono columns for numeric data */
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+      }
+      .name-cell {
+        font-weight: 500;
+        color: var(--text);
+      }
+      .remaining-zero {
+        color: var(--success);
+        font-weight: 600;
+      }
 
-    /* Status pill */
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 500;
-      text-transform: capitalize;
-    }
-    .status-pill::before {
-      content: '';
-      width: 6px; height: 6px;
-      border-radius: 50%;
-    }
-    .status-active { background: var(--success-soft); color: var(--success); }
-    .status-active::before { background: var(--success); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18); }
-    .status-meeting { background: var(--warning-soft); color: var(--warning); }
-    .status-meeting::before { background: var(--warning); }
-    .status-stopped { background: var(--danger-soft); color: var(--danger); }
-    .status-stopped::before { background: var(--danger); }
+      /* Status pill */
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: capitalize;
+      }
+      .status-pill::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+      .status-active {
+        background: var(--success-soft);
+        color: var(--success);
+      }
+      .status-active::before {
+        background: var(--success);
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+      }
+      .status-meeting {
+        background: var(--warning-soft);
+        color: var(--warning);
+      }
+      .status-meeting::before {
+        background: var(--warning);
+      }
+      .status-stopped {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .status-stopped::before {
+        background: var(--danger);
+      }
 
-    /* Empty / loading states */
-    .empty-state {
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--text-muted);
-    }
-    .empty-state i { font-size: 32px; opacity: 0.4; margin-bottom: 12px; }
+      /* Empty / loading states */
+      .empty-state {
+        padding: 60px 20px;
+        text-align: center;
+        color: var(--text-muted);
+      }
+      .empty-state i {
+        font-size: 32px;
+        opacity: 0.4;
+        margin-bottom: 12px;
+      }
 
-    /* Hide default DataTables filter (we use our own search box) */
-    .dataTables_filter, .dataTables_info { display: none !important; }
-    .dataTables_wrapper { padding: 0 !important; }
+      /* Hide default DataTables filter (we use our own search box) */
+      .dataTables_filter,
+      .dataTables_info {
+        display: none !important;
+      }
+      .dataTables_wrapper {
+        padding: 0 !important;
+      }
 
-    /* ───── Popup / Modal ───── */
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(4px);
-      z-index: 1000;
-      animation: fadeIn 0.15s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .popup-content {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--surface);
-      border-radius: 14px;
-      padding: 24px 28px;
-      width: min(90vw, 820px);
-      max-height: 85vh;
-      overflow: auto;
-      box-shadow: var(--shadow-lg);
-    }
-    #closePopup {
-      position: absolute;
-      top: 16px; right: 18px;
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: var(--surface-2);
-      color: var(--text-muted);
-      display: grid; place-items: center;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-size: 14px;
-    }
-    #closePopup:hover { background: var(--danger-soft); color: var(--danger); }
+      /* ───── Popup / Modal ───── */
+      .popup {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        animation: fadeIn 0.15s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .popup-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--surface);
+        border-radius: 14px;
+        padding: 24px 28px;
+        width: min(90vw, 820px);
+        max-height: 85vh;
+        overflow: auto;
+        box-shadow: var(--shadow-lg);
+      }
+      #closePopup {
+        position: absolute;
+        top: 16px;
+        right: 18px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--surface-2);
+        color: var(--text-muted);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 14px;
+      }
+      #closePopup:hover {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
 
-    .session-end-time {
-      font-size: 18px;
-      font-weight: 600;
-      text-align: center;
-      margin: 12px 0 18px;
-      padding: 12px;
-      background: linear-gradient(135deg, rgba(91, 108, 255, 0.08), rgba(22, 163, 74, 0.08));
-      border-radius: var(--radius-sm);
-      color: var(--text);
-    }
+      .session-end-time {
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        margin: 12px 0 18px;
+        padding: 12px;
+        background: linear-gradient(135deg, rgba(91, 108, 255, 0.08), rgba(22, 163, 74, 0.08));
+        border-radius: var(--radius-sm);
+        color: var(--text);
+      }
 
-    /* Timeline bar */
-    #timeline {
-      margin: 8px 0 18px;
-      width: 100%;
-      position: relative;
-      height: 28px;
-      background: var(--surface-2);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    #timeline div {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      background: linear-gradient(90deg, var(--success), #22c55e);
-    }
+      /* Timeline bar */
+      #timeline {
+        margin: 8px 0 18px;
+        width: 100%;
+        position: relative;
+        height: 28px;
+        background: var(--surface-2);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      #timeline div {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        background: linear-gradient(90deg, var(--success), #22c55e);
+      }
 
-    /* Activity breakdown table */
-    .activity_breakdown {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-    .activity_breakdown th {
-      background: var(--surface-2);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 10px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    .activity_breakdown td {
-      padding: 10px 14px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    .activity_breakdown tbody tr:last-child td { border-bottom: none; }
-    .activity_breakdown tbody tr:hover { background: var(--surface-2); }
-    .activity_breakdown tbody tr.meeting {
-      background: var(--warning-soft) !important;
-    }
-    .activity_breakdown tbody tr.meeting:hover { background: #c7defe !important; }
+      /* Activity breakdown table */
+      .activity_breakdown {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+      .activity_breakdown th {
+        background: var(--surface-2);
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 10px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      .activity_breakdown td {
+        padding: 10px 14px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .activity_breakdown tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .activity_breakdown tbody tr:hover {
+        background: var(--surface-2);
+      }
+      .activity_breakdown tbody tr.meeting {
+        background: var(--warning-soft) !important;
+      }
+      .activity_breakdown tbody tr.meeting:hover {
+        background: #c7defe !important;
+      }
 
-    /* ─────────────────────────────────────────
+      /* ─────────────────────────────────────────
        RESPONSIVE
        ───────────────────────────────────────── */
 
-    /* Tablet (≤1024px) */
-    @media (max-width: 1024px) {
-      .main { padding: 20px 18px 40px; }
-      .stat-value { font-size: 22px; }
-    }
-
-    /* Small tablet / large phone (≤768px) */
-    @media (max-width: 768px) {
-      .main { padding: 14px 12px 28px; }
-      .app-header { padding: 12px 16px; }
-      .brand-icon { width: 34px; height: 34px; font-size: 15px; }
-      .brand h1 { font-size: 15px; }
-      .brand-sub { font-size: 11px; }
-
-      /* Compact stats — 3 in a row, tight padding */
-      .stats {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        margin-bottom: 14px;
-      }
-      .stat-card {
-        padding: 8px 8px 8px 11px;
-        gap: 2px;
-        border-radius: 8px;
-      }
-      .stat-card::before { width: 3px; }
-      .stat-label {
-        font-size: 9px;
-        letter-spacing: 0.04em;
-      }
-      .stat-value {
-        font-size: 17px;
-        line-height: 1.1;
+      /* Tablet (≤1024px) */
+      @media (max-width: 1024px) {
+        .main {
+          padding: 20px 18px 40px;
+        }
+        .stat-value {
+          font-size: 22px;
+        }
       }
 
-      /* Toolbar stacks */
-      .toolbar { gap: 10px; margin-bottom: 12px; }
-      .toolbar-left { width: 100%; gap: 8px; }
-      .toolbar-left .field { flex: 1; min-width: 0; }
-      .toolbar-left .field input,
-      .toolbar-left .field select { width: 100%; }
-      .toolbar-right { width: 100%; }
-      .search-wrap { width: 100%; }
+      /* Small tablet / large phone (≤768px) */
+      @media (max-width: 768px) {
+        .main {
+          padding: 14px 12px 28px;
+        }
+        .app-header {
+          padding: 12px 16px;
+        }
+        .brand-icon {
+          width: 34px;
+          height: 34px;
+          font-size: 15px;
+        }
+        .brand h1 {
+          font-size: 15px;
+        }
+        .brand-sub {
+          font-size: 11px;
+        }
 
-      /* Compact table — keep table layout, tight rows */
-      .modern-table thead th {
-        padding: 8px 8px !important;
-        font-size: 9.5px;
-        letter-spacing: 0.04em;
+        /* Compact stats — 3 in a row, tight padding */
+        .stats {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 6px;
+          margin-bottom: 14px;
+        }
+        .stat-card {
+          padding: 8px 8px 8px 11px;
+          gap: 2px;
+          border-radius: 8px;
+        }
+        .stat-card::before {
+          width: 3px;
+        }
+        .stat-label {
+          font-size: 9px;
+          letter-spacing: 0.04em;
+        }
+        .stat-value {
+          font-size: 17px;
+          line-height: 1.1;
+        }
+
+        /* Toolbar stacks */
+        .toolbar {
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+        .toolbar-left {
+          width: 100%;
+          gap: 8px;
+        }
+        .toolbar-left .field {
+          flex: 1;
+          min-width: 0;
+        }
+        .toolbar-left .field input,
+        .toolbar-left .field select {
+          width: 100%;
+        }
+        .toolbar-right {
+          width: 100%;
+        }
+        .search-wrap {
+          width: 100%;
+        }
+
+        /* Compact table — keep table layout, tight rows */
+        .modern-table thead th {
+          padding: 8px 8px !important;
+          font-size: 9.5px;
+          letter-spacing: 0.04em;
+        }
+        .modern-table tbody td {
+          padding: 10px 8px !important;
+          font-size: 12.5px;
+          vertical-align: middle;
+        }
+        /* Fixed widths on numeric/status columns → name column takes remaining space */
+        .modern-table thead th:nth-child(2),
+        .modern-table tbody td:nth-child(2),
+        .modern-table thead th:nth-child(3),
+        .modern-table tbody td:nth-child(3) {
+          width: 56px;
+        }
+        .modern-table thead th:nth-child(4),
+        .modern-table tbody td:nth-child(4) {
+          width: 80px;
+        }
+        .name-cell {
+          word-break: break-word;
+        }
+        .mono {
+          font-size: 12px;
+        }
+        .status-pill {
+          padding: 3px 7px;
+          font-size: 11px;
+          gap: 4px;
+        }
+        .status-pill::before {
+          width: 5px;
+          height: 5px;
+        }
+
+        .popup-content {
+          width: 94vw;
+          padding: 18px 16px;
+          max-height: 90vh;
+        }
+        .activity_breakdown th {
+          padding: 8px 10px;
+          font-size: 10px;
+        }
+        .activity_breakdown td {
+          padding: 8px 10px;
+          font-size: 12px;
+        }
       }
-      .modern-table tbody td {
-        padding: 10px 8px !important;
-        font-size: 12.5px;
-        vertical-align: middle;
+
+      /* Phone (≤480px) — even tighter */
+      @media (max-width: 480px) {
+        .stat-card {
+          padding: 7px 7px 7px 10px;
+        }
+        .stat-label {
+          font-size: 8.5px;
+        }
+        .stat-value {
+          font-size: 15px;
+        }
+
+        .modern-table thead th {
+          padding: 7px 6px !important;
+          font-size: 9px;
+        }
+        .modern-table tbody td {
+          padding: 9px 6px !important;
+          font-size: 12px;
+        }
+        .mono {
+          font-size: 11.5px;
+        }
+        .status-pill {
+          padding: 2px 6px;
+          font-size: 10.5px;
+        }
+
+        /* Modal near-fullscreen on phone */
+        .popup-content {
+          width: 100vw;
+          height: 100vh;
+          max-height: 100vh;
+          border-radius: 0;
+          top: 0;
+          left: 0;
+          transform: none;
+          padding: 18px 14px;
+        }
+        #closePopup {
+          top: 14px;
+          right: 14px;
+        }
+        .session-end-time {
+          font-size: 15px;
+          padding: 10px;
+        }
       }
-      /* Fixed widths on numeric/status columns → name column takes remaining space */
-      .modern-table thead th:nth-child(2),
-      .modern-table tbody td:nth-child(2),
-      .modern-table thead th:nth-child(3),
-      .modern-table tbody td:nth-child(3) { width: 56px; }
-      .modern-table thead th:nth-child(4),
-      .modern-table tbody td:nth-child(4) { width: 80px; }
-      .name-cell { word-break: break-word; }
-      .mono { font-size: 12px; }
-      .status-pill {
-        padding: 3px 7px;
-        font-size: 11px;
-        gap: 4px;
+
+      /* Tiny phone (≤360px) — last-resort compaction */
+      @media (max-width: 360px) {
+        .brand-sub {
+          display: none;
+        }
+        .stats {
+          gap: 5px;
+        }
+        .stat-card {
+          padding: 6px 6px 6px 9px;
+        }
+        .stat-value {
+          font-size: 14px;
+        }
+        .stat-label {
+          font-size: 8px;
+        }
+        .modern-table tbody td {
+          padding: 8px 5px !important;
+          font-size: 11.5px;
+        }
+        .modern-table thead th {
+          padding: 6px 5px !important;
+        }
+        .status-pill {
+          padding: 2px 5px;
+          font-size: 10px;
+        }
       }
-      .status-pill::before { width: 5px; height: 5px; }
 
-      .popup-content { width: 94vw; padding: 18px 16px; max-height: 90vh; }
-      .activity_breakdown th { padding: 8px 10px; font-size: 10px; }
-      .activity_breakdown td { padding: 8px 10px; font-size: 12px; }
-    }
-
-    /* Phone (≤480px) — even tighter */
-    @media (max-width: 480px) {
-      .stat-card { padding: 7px 7px 7px 10px; }
-      .stat-label { font-size: 8.5px; }
-      .stat-value { font-size: 15px; }
-
-      .modern-table thead th { padding: 7px 6px !important; font-size: 9px; }
-      .modern-table tbody td { padding: 9px 6px !important; font-size: 12px; }
-      .mono { font-size: 11.5px; }
-      .status-pill { padding: 2px 6px; font-size: 10.5px; }
-
-      /* Modal near-fullscreen on phone */
-      .popup-content {
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-        top: 0; left: 0;
-        transform: none;
-        padding: 18px 14px;
+      /* Touch targets: bigger inputs on touch devices */
+      @media (hover: none) and (pointer: coarse) {
+        .field input[type="date"],
+        .field select,
+        .search-wrap input {
+          height: 42px;
+          font-size: 14px;
+        }
+        .btn-icon {
+          width: 42px;
+          height: 42px;
+        }
+        .modern-table tbody tr {
+          min-height: 56px;
+        }
       }
-      #closePopup { top: 14px; right: 14px; }
-      .session-end-time { font-size: 15px; padding: 10px; }
-    }
-
-    /* Tiny phone (≤360px) — last-resort compaction */
-    @media (max-width: 360px) {
-      .brand-sub { display: none; }
-      .stats { gap: 5px; }
-      .stat-card { padding: 6px 6px 6px 9px; }
-      .stat-value { font-size: 14px; }
-      .stat-label { font-size: 8px; }
-      .modern-table tbody td { padding: 8px 5px !important; font-size: 11.5px; }
-      .modern-table thead th { padding: 6px 5px !important; }
-      .status-pill { padding: 2px 5px; font-size: 10px; }
-    }
-
-    /* Touch targets: bigger inputs on touch devices */
-    @media (hover: none) and (pointer: coarse) {
-      .field input[type="date"],
-      .field select,
-      .search-wrap input { height: 42px; font-size: 14px; }
-      .btn-icon { width: 42px; height: 42px; }
-      .modern-table tbody tr { min-height: 56px; }
-    }
-  </style>
-</head>
-<body>
-
-  <div id="popup" class="popup">
-    <div class="popup-content">
-      <i id="closePopup" class="fa fa-close"></i>
-      <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 600;">Activity Breakdown</h3>
-      <div id="timeline" style="display: none;"></div>
-      <p id="end-time" class="session-end-time"></p>
-      <table id="myTable" class="activity_breakdown">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Duration</th>
-            <th>Task</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
-  <header class="app-header">
-    <div class="brand">
-      <div class="brand-icon"><i class="fa fa-bolt"></i></div>
-      <div>
-        <h1>Team Activity</h1>
-        <p class="brand-sub">Live employee time tracking</p>
+    </style>
+  </head>
+  <body>
+    <div id="popup" class="popup">
+      <div class="popup-content">
+        <i id="closePopup" class="fa fa-close"></i>
+        <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 600">Activity Breakdown</h3>
+        <div id="timeline" style="display: none"></div>
+        <p id="end-time" class="session-end-time"></p>
+        <table id="myTable" class="activity_breakdown">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Duration</th>
+              <th>Task</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-    <button id="refresh" class="btn-icon" onclick="reload()" title="Reload">
-      <i class="fa fa-refresh"></i>
-    </button>
-  </header>
 
-  <main class="main">
-    <section class="stats">
-      <div class="stat-card stat-active">
-        <span class="stat-label">Active</span>
-        <span class="stat-value" id="statActive">0</span>
-      </div>
-      <div class="stat-card stat-meeting">
-        <span class="stat-label">In Meeting</span>
-        <span class="stat-value" id="statMeeting">0</span>
-      </div>
-      <div class="stat-card stat-stopped">
-        <span class="stat-label">Stopped</span>
-        <span class="stat-value" id="statStopped">0</span>
-      </div>
-    </section>
-
-    <section class="toolbar">
-      <div class="toolbar-left">
-        <div class="field">
-          <label for="datepicker">Date</label>
-          <input type="date" id="datepicker" onchange="changeDate()">
-        </div>
-        <div class="field">
-          <label for="activityStatus">Status</label>
-          <select id="activityStatus" onchange="filterTable()">
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="meeting">Meeting</option>
-            <option value="stopped">Stopped</option>
-          </select>
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa fa-bolt"></i></div>
+        <div>
+          <h1>Team Activity</h1>
+          <p class="brand-sub">Live employee time tracking</p>
         </div>
       </div>
-      <div class="toolbar-right">
-        <div class="search-wrap">
-          <i class="fa fa-search"></i>
-          <input type="search" id="searchInput" placeholder="Search by name…" oninput="searchTable()">
+      <button id="refresh" class="btn-icon" onclick="reload()" title="Reload">
+        <i class="fa fa-refresh"></i>
+      </button>
+    </header>
+
+    <main class="main">
+      <section class="stats">
+        <div class="stat-card stat-active">
+          <span class="stat-label">Active</span>
+          <span class="stat-value" id="statActive">0</span>
         </div>
-      </div>
-    </section>
+        <div class="stat-card stat-meeting">
+          <span class="stat-label">In Meeting</span>
+          <span class="stat-value" id="statMeeting">0</span>
+        </div>
+        <div class="stat-card stat-stopped">
+          <span class="stat-label">Stopped</span>
+          <span class="stat-value" id="statStopped">0</span>
+        </div>
+      </section>
 
-    <section class="table-card">
-      <table id="employeeTable" class="modern-table" style="width: 100%;">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Worked</th>
-            <th>Remaining</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-  </main>
+      <section class="toolbar">
+        <div class="toolbar-left">
+          <div class="field">
+            <label for="datepicker">Date</label>
+            <input type="date" id="datepicker" onchange="changeDate()" />
+          </div>
+          <div class="field">
+            <label for="activityStatus">Status</label>
+            <select id="activityStatus" onchange="filterTable()">
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="meeting">Meeting</option>
+              <option value="stopped">Stopped</option>
+            </select>
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <div class="search-wrap">
+            <i class="fa fa-search"></i>
+            <input type="search" id="searchInput" placeholder="Search by name…" oninput="searchTable()" />
+          </div>
+        </div>
+      </section>
 
-  <!-- Include jQuery and DataTables JavaScript -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-  <script>
+      <section class="table-card">
+        <table id="employeeTable" class="modern-table" style="width: 100%">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Worked</th>
+              <th>Remaining</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
 
-    let employees = []; // To store the fetched employee data
-    let dataTable; // To store the DataTable instance
+    <!-- Include jQuery and DataTables JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+      let employees = []; // To store the fetched employee data
+      let dataTable; // To store the DataTable instance
 
+      const today = new Date();
+      today.setHours(0);
+      today.setMinutes(0);
+      today.setSeconds(0);
+      today.setMilliseconds(0);
 
-  const today = new Date();
-  today.setHours(0);
-  today.setMinutes(0);
-  today.setSeconds(0);
-  today.setMilliseconds(0);
+      var milliseconds = new Date(today).getTime();
+      let start_date = milliseconds;
+      let end_date = start_date + 86400000;
+      let isToday = true; // gates the live 1s/sec counter to today only
 
-
-  var milliseconds = new Date(today).getTime();
-  let start_date = milliseconds;
-  let end_date = start_date + 86400000;
-  let isToday = true; // gates the live 1s/sec counter to today only
-
-  function setDatepickerToToday() {
-    const el = document.getElementById("datepicker");
-    console.log("[setDatepickerToToday] datepicker element:", el);
-    if (!el) {
-      console.error("[setDatepickerToToday] #datepicker not found in DOM");
-      return;
-    }
-    const y = today.getFullYear();
-    const m = (today.getMonth() + 1).toString().padStart(2, "0");
-    const d = today.getDate().toString().padStart(2, "0");
-    const formatted = `${y}-${m}-${d}`;
-    el.value = formatted;
-    console.log("[setDatepickerToToday] set value to:", formatted, "today ms:", today.getTime());
-  }
-
-  async function changeDate() {
-    console.log("[changeDate] fired");
-    const el = document.getElementById("datepicker");
-    const picked = el ? el.value : null;
-    console.log("[changeDate] picked value:", picked);
-    if (!picked) {
-      console.warn("[changeDate] empty value, aborting");
-      return;
-    }
-    const [y, m, d] = picked.split("-").map(Number);
-    const selected = new Date(y, m - 1, d, 0, 0, 0, 0);
-    start_date = selected.getTime();
-    end_date = start_date + 86400000;
-    isToday = start_date === today.getTime();
-    console.log("[changeDate] selected Date:", selected.toString());
-    console.log("[changeDate] start_date:", start_date, new Date(start_date).toString());
-    console.log("[changeDate] end_date:", end_date, new Date(end_date).toString());
-    console.log("[changeDate] isToday:", isToday);
-    await reload();
-    console.log("[changeDate] reload complete");
-  }
-
-  async function reload() {
-    console.log("[reload] start — start_date:", start_date, "end_date:", end_date);
-    const btn = document.getElementById("refresh");
-    btn?.classList.add("spinning");
-    await fetchEmployeeData();
-    console.log("[reload] fetchEmployeeData done, employees length:", employees?.length);
-    filterTable();
-    setTimeout(() => btn?.classList.remove("spinning"), 600);
-    console.log("[reload] filterTable done");
-  }
-
-    async function fetchEmployeeData() {
-      try {
-        let url = "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime="+start_date+"&endTime="+end_date+"&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL"
-        console.log("[fetchEmployeeData] URL:", url);
-        const response = await fetch(url, {
-          headers: {
-            "accept": "application/json, text/plain, */*",
-            "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Linux\"",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "same-site",
-            "Referer": "https://client.teamlogger.com/",
-            "Referrer-Policy": "strict-origin-when-cross-origin"
-            // Add the rest of the headers here
-          },
-          body: null,
-          method: "GET"
-        });
-
-        console.log("[fetchEmployeeData] HTTP status:", response.status, response.statusText);
-        if (!response.ok) {
-          const text = await response.text();
-          console.error("[fetchEmployeeData] non-OK response body:", text);
+      function setDatepickerToToday() {
+        const el = document.getElementById("datepicker");
+        console.log("[setDatepickerToToday] datepicker element:", el);
+        if (!el) {
+          console.error("[setDatepickerToToday] #datepicker not found in DOM");
           return;
         }
-        respomse = await response.json();
-        console.log("[fetchEmployeeData] raw response:", respomse);
-        employees = respomse?.employeeTimeReport?.timeReportItems
-        console.log("[fetchEmployeeData] employees parsed:", employees?.length, "items");
-        if (!employees || employees.length === 0) {
-          console.warn("[fetchEmployeeData] no timeReportItems for this date range");
+        const y = today.getFullYear();
+        const m = (today.getMonth() + 1).toString().padStart(2, "0");
+        const d = today.getDate().toString().padStart(2, "0");
+        const formatted = `${y}-${m}-${d}`;
+        el.value = formatted;
+        console.log("[setDatepickerToToday] set value to:", formatted, "today ms:", today.getTime());
+      }
+
+      async function changeDate() {
+        console.log("[changeDate] fired");
+        const el = document.getElementById("datepicker");
+        const picked = el ? el.value : null;
+        console.log("[changeDate] picked value:", picked);
+        if (!picked) {
+          console.warn("[changeDate] empty value, aborting");
+          return;
         }
-        populateTable(employees); // Populate the table initially with all employees
-      } catch (error) {
-        console.error("[fetchEmployeeData] threw:", error);
+        const [y, m, d] = picked.split("-").map(Number);
+        const selected = new Date(y, m - 1, d, 0, 0, 0, 0);
+        start_date = selected.getTime();
+        end_date = start_date + 86400000;
+        isToday = start_date === today.getTime();
+        console.log("[changeDate] selected Date:", selected.toString());
+        console.log("[changeDate] start_date:", start_date, new Date(start_date).toString());
+        console.log("[changeDate] end_date:", end_date, new Date(end_date).toString());
+        console.log("[changeDate] isToday:", isToday);
+        await reload();
+        console.log("[changeDate] reload complete");
       }
-    }
 
-    // Function to populate the table with employee data
-    function populateTable(data) {
-      console.log("[populateTable] called with", data?.length, "items; dataTable initialized?", !!dataTable);
-      const tableBody = document.querySelector("#employeeTable tbody");
-      if (!tableBody) {
-        console.error("[populateTable] tbody not found");
-        return;
+      async function reload() {
+        console.log("[reload] start — start_date:", start_date, "end_date:", end_date);
+        const btn = document.getElementById("refresh");
+        btn?.classList.add("spinning");
+        await fetchEmployeeData();
+        console.log("[reload] fetchEmployeeData done, employees length:", employees?.length);
+        filterTable();
+        setTimeout(() => btn?.classList.remove("spinning"), 600);
+        console.log("[reload] filterTable done");
       }
-      // If DataTable is already initialized, clear via its API so internal state stays in sync
-      if (dataTable) {
-        console.log("[populateTable] clearing DataTable rows via API");
-        dataTable.clear();
-      } else {
-        tableBody.innerHTML = "";
-      }
-      const now = new Date(); // Current date and time
 
-      data.forEach((employee, index) => {
+      async function fetchEmployeeData() {
+        try {
+          let url =
+            "https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/reports_new2?startTime=" +
+            start_date +
+            "&endTime=" +
+            end_date +
+            "&dayStartCutOff=14400000&dayEndCutOff=14399999&suppressDetails=false&groupId=ALL";
+          console.log("[fetchEmployeeData] URL:", url);
+          const response = await fetch(url, {
+            headers: {
+              accept: "application/json, text/plain, */*",
+              "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+              authorization:
+                "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6ImIxYjM5MzQzY2Q3NDRlYjliZGUwOWUzZDU0NjQ1ZjRkIiwiYXVkIjoic2VydmVyIn0.sM1hN7OuyEQhcVFfkMxebAu8pBsaXqDytgNEiOM6p4w",
+              "sec-ch-ua": '" Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"',
+              "sec-ch-ua-mobile": "?0",
+              "sec-ch-ua-platform": '"Linux"',
+              "sec-fetch-dest": "empty",
+              "sec-fetch-mode": "cors",
+              "sec-fetch-site": "same-site",
+              Referer: "https://client.teamlogger.com/",
+              "Referrer-Policy": "strict-origin-when-cross-origin",
+              // Add the rest of the headers here
+            },
+            body: null,
+            method: "GET",
+          });
+
+          console.log("[fetchEmployeeData] HTTP status:", response.status, response.statusText);
+          if (!response.ok) {
+            const text = await response.text();
+            console.error("[fetchEmployeeData] non-OK response body:", text);
+            return;
+          }
+          respomse = await response.json();
+          console.log("[fetchEmployeeData] raw response:", respomse);
+          employees = respomse?.employeeTimeReport?.timeReportItems;
+          console.log("[fetchEmployeeData] employees parsed:", employees?.length, "items");
+          if (!employees || employees.length === 0) {
+            console.warn("[fetchEmployeeData] no timeReportItems for this date range");
+          }
+          populateTable(employees); // Populate the table initially with all employees
+        } catch (error) {
+          console.error("[fetchEmployeeData] threw:", error);
+        }
+      }
+
+      // Function to populate the table with employee data
+      function populateTable(data) {
+        console.log("[populateTable] called with", data?.length, "items; dataTable initialized?", !!dataTable);
+        const tableBody = document.querySelector("#employeeTable tbody");
+        if (!tableBody) {
+          console.error("[populateTable] tbody not found");
+          return;
+        }
+        // If DataTable is already initialized, clear via its API so internal state stays in sync
+        if (dataTable) {
+          console.log("[populateTable] clearing DataTable rows via API");
+          dataTable.clear();
+        } else {
+          tableBody.innerHTML = "";
+        }
+        const now = new Date(); // Current date and time
+
+        data.forEach((employee, index) => {
           const row = document.createElement("tr");
           if (employee.stopped) {
-              row.classList.add("stopped-row"); // Add the "stopped-row" class if employee.stopped is true
+            row.classList.add("stopped-row"); // Add the "stopped-row" class if employee.stopped is true
           }
 
-          let activity_badge = 'green-dot'
-          let status = 'active'
-          if(employee.stopped) { 
-            activity_badge = 'red-dot';
-            status = 'stopped'
-          }else{
-            if(employee?.las?.tStatus == 'meeting'){
-              activity_badge = 'blue-dot';
-              status = 'meeting'
-            }else if(employee?.las?.tStatus == 'active'){
-              activity_badge = 'green-dot';
-              status = 'active'
-
+          let activity_badge = "green-dot";
+          let status = "active";
+          if (employee.stopped) {
+            activity_badge = "red-dot";
+            status = "stopped";
+          } else {
+            if (employee?.las?.tStatus == "meeting") {
+              activity_badge = "blue-dot";
+              status = "meeting";
+            } else if (employee?.las?.tStatus == "active") {
+              activity_badge = "green-dot";
+              status = "active";
             }
           }
           switch (employee?.las?.tStatus) {
             case "active":
-              
               break;
-          
+
             default:
               break;
           }
           const totalHours = 8; // Total available hours
           const remainingHours = Math.max(0, totalHours - employee.totalHours);
 
-
-          const remainingCls = remainingHours === 0 ? 'mono remaining-zero' : 'mono';
+          const remainingCls = remainingHours === 0 ? "mono remaining-zero" : "mono";
           row.innerHTML = `
           <td class="name-cell">${employee.title}</td>
           <td class="mono">${formatHoursToMinutes(employee.totalHours)}</td>
@@ -792,7 +1041,7 @@
           <td><span class="status-pill status-${status}">${status}</span></td>
           `;
           row.addEventListener("click", function () {
-            show_activity_breakdown(employee.id)
+            show_activity_breakdown(employee.id);
           });
 
           if (dataTable) {
@@ -800,65 +1049,66 @@
           } else {
             tableBody.appendChild(row);
           }
-      });
-      if (dataTable) {
-        console.log("[populateTable] drawing DataTable with", data?.length, "rows");
-        dataTable.draw(false);
-      }
-      updateStats(data);
-      console.log("[populateTable] done");
-      }
-
-    function updateStats(data) {
-      let active = 0, meeting = 0, stopped = 0;
-      (data || []).forEach(e => {
-        if (e.stopped) stopped++;
-        else if (e?.las?.tStatus === 'meeting') meeting++;
-        else active++;
-      });
-      document.getElementById('statActive').textContent = active;
-      document.getElementById('statMeeting').textContent = meeting;
-      document.getElementById('statStopped').textContent = stopped;
-    }
-
-    function searchTable() {
-      const term = document.getElementById('searchInput').value;
-      if (dataTable) dataTable.search(term).draw();
-    }
-
-    function formatRemainingTime(totalHours) {
-      const hours = Math.floor(totalHours);
-      const remainingMinutes = (totalHours - hours) * 60;
-      const minutes = Math.floor(remainingMinutes);
-      const seconds = Math.round((remainingMinutes - minutes) * 60);
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-
-    function updateRemainingTime() {
-      if (!isToday) return; // don't tick forward on historical dates
-      console.log(updateRemainingTime);
-      const now = new Date(); // Current date and time
-
-      employees.forEach(employee => {
-        if(!employee.stopped){
-          employee.totalHours += 0.000277778
-          const totalHours = 8; // Total available hours
-          const remainingHours = Math.max(0, totalHours - employee.totalHours);
-          const remainingTimeCell = document.getElementById(`remainingTime-${employee.id}`);
-          if(remainingTimeCell){
-            remainingTimeCell.textContent = formatRemainingTime(remainingHours);
-          }
+        });
+        if (dataTable) {
+          console.log("[populateTable] drawing DataTable with", data?.length, "rows");
+          dataTable.draw(false);
         }
-      });
-    }
+        updateStats(data);
+        console.log("[populateTable] done");
+      }
 
-    // Call the function once initially
+      function updateStats(data) {
+        let active = 0,
+          meeting = 0,
+          stopped = 0;
+        (data || []).forEach((e) => {
+          if (e.stopped) stopped++;
+          else if (e?.las?.tStatus === "meeting") meeting++;
+          else active++;
+        });
+        document.getElementById("statActive").textContent = active;
+        document.getElementById("statMeeting").textContent = meeting;
+        document.getElementById("statStopped").textContent = stopped;
+      }
 
-    // Set up an interval to refresh every second
-    setInterval(updateRemainingTime, 1000);
+      function searchTable() {
+        const term = document.getElementById("searchInput").value;
+        if (dataTable) dataTable.search(term).draw();
+      }
 
-    function getFormatedTime(time) {
+      function formatRemainingTime(totalHours) {
+        const hours = Math.floor(totalHours);
+        const remainingMinutes = (totalHours - hours) * 60;
+        const minutes = Math.floor(remainingMinutes);
+        const seconds = Math.round((remainingMinutes - minutes) * 60);
+        return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      }
+
+      function updateRemainingTime() {
+        if (!isToday) return; // don't tick forward on historical dates
+        console.log(updateRemainingTime);
+        const now = new Date(); // Current date and time
+
+        employees.forEach((employee) => {
+          if (!employee.stopped) {
+            employee.totalHours += 0.000277778;
+            const totalHours = 8; // Total available hours
+            const remainingHours = Math.max(0, totalHours - employee.totalHours);
+            const remainingTimeCell = document.getElementById(`remainingTime-${employee.id}`);
+            if (remainingTimeCell) {
+              remainingTimeCell.textContent = formatRemainingTime(remainingHours);
+            }
+          }
+        });
+      }
+
+      // Call the function once initially
+
+      // Set up an interval to refresh every second
+      setInterval(updateRemainingTime, 1000);
+
+      function getFormatedTime(time) {
         const sessionEndTime = new Date(time);
         const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
         const minutes = sessionEndTime.getMinutes();
@@ -866,205 +1116,200 @@
         const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
 
         return endTimeStr;
-    }
-    function formatHoursToMinutes(decimalHours) {
-      // Convert decimal hours to total minutes
-      const totalMinutes = decimalHours * 60;
-
-      // Extract hours and minutes from the totalMinutes
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
-
-      // Format hours and minutes to two-digit format
-      const formattedHours = hours.toString().padStart(2, '0');
-      const formattedMinutes = minutes.toString().padStart(2, '0');
-
-      // Create the formatted string
-      const formattedString = `${formattedHours}:${formattedMinutes}`;
-
-      return formattedString;
-    }
-
-    function filterTable() {
-      const selectedStatus = document.getElementById("activityStatus").value;
-      if (!dataTable) return;
-      if (selectedStatus !== "all") {
-        dataTable.column(3).search(selectedStatus).draw();
-      } else {
-        dataTable.column(3).search("").draw();
       }
-    }
+      function formatHoursToMinutes(decimalHours) {
+        // Convert decimal hours to total minutes
+        const totalMinutes = decimalHours * 60;
 
-  // Function to initialize DataTable on the employee table
-  function initializeDataTable() {
-    dataTable = $('#employeeTable').DataTable({
-      "order": [[1, "desc"]],   // Sort by "Worked" hours, highest first
-      "paging": false,
-      "searching": true,
-      "info": false,
-      "stripeClasses": [],
-      "language": { "emptyTable": "No employees match the current filters." }
-    });
-  }
+        // Extract hours and minutes from the totalMinutes
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.round(totalMinutes % 60); // Use Math.round to handle rounding errors
 
-  async function show_activity_breakdown(id) {
-    let url = `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + id;
-    const response = await fetch(url, {
+        // Format hours and minutes to two-digit format
+        const formattedHours = hours.toString().padStart(2, "0");
+        const formattedMinutes = minutes.toString().padStart(2, "0");
+
+        // Create the formatted string
+        const formattedString = `${formattedHours}:${formattedMinutes}`;
+
+        return formattedString;
+      }
+
+      function filterTable() {
+        const selectedStatus = document.getElementById("activityStatus").value;
+        if (!dataTable) return;
+        if (selectedStatus !== "all") {
+          dataTable.column(3).search(selectedStatus).draw();
+        } else {
+          dataTable.column(3).search("").draw();
+        }
+      }
+
+      // Function to initialize DataTable on the employee table
+      function initializeDataTable() {
+        dataTable = $("#employeeTable").DataTable({
+          order: [[1, "desc"]], // Sort by "Worked" hours, highest first
+          paging: false,
+          searching: true,
+          info: false,
+          stripeClasses: [],
+          language: { emptyTable: "No employees match the current filters." },
+        });
+      }
+
+      async function show_activity_breakdown(id) {
+        let url =
+          `https://api2.teamlogger.com/api/companies/278350e941c540cfb10c2010337f9385/approved_worksessions?startTime=` + start_date + `&endTime=` + end_date + `&accountId=` + id;
+        const response = await fetch(url, {
           headers: {
-            "accept": "application/json, text/plain, */*",
+            accept: "application/json, text/plain, */*",
             "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
-            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
-            "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\"",
+            authorization:
+              "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vaGlwZXJyLmNvbSIsInN1YiI6IjQwYzNmODExMmM4MDQ3MGM4YzlhNDc4OTRhZGVkMGU1IiwiYXVkIjoic2VydmVyIn0.p1fPED6o0HnhZhvJbkjJgz_Nkx64jozCyCu1IDUkBZk",
+            "sec-ch-ua": '" Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"',
             "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-ch-ua-platform": '"Linux"',
             "sec-fetch-dest": "empty",
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "same-site",
-            "Referer": "https://client.teamlogger.com/",
-            "Referrer-Policy": "strict-origin-when-cross-origin"
+            Referer: "https://client.teamlogger.com/",
+            "Referrer-Policy": "strict-origin-when-cross-origin",
             // Add the rest of the headers here
           },
           body: null,
-          method: "GET"
-    });
+          method: "GET",
+        });
 
-    breakData = await response.json();
-    let tableBody = document.querySelector("#myTable tbody");
-    tableBody.innerHTML = "";
-    breakData.forEach((element) => {
-        let period = getFormatedTime24(element.startTime) + " - " + getFormatedTime24(element.endTime).toLocaleString();
-        let duration = decimalHoursToHoursMinutes(element.activeHours);
-        
-        if(duration != "0h 0m"){
-            if(duration.substr(0,2) == "0h"){
-                duration = duration.substr(3,)
+        breakData = await response.json();
+        let tableBody = document.querySelector("#myTable tbody");
+        tableBody.innerHTML = "";
+        breakData.forEach((element) => {
+          let period = getFormatedTime24(element.startTime) + " - " + getFormatedTime24(element.endTime).toLocaleString();
+          let duration = decimalHoursToHoursMinutes(element.activeHours);
+
+          if (duration != "0h 0m") {
+            if (duration.substr(0, 2) == "0h") {
+              duration = duration.substr(3);
             }
             let activityLevel = element.activityLevel != "NA" ? " (" + element.activityLevel + "%)" : "";
             let task = element.projectName + ": " + element.projectTaskName + activityLevel;
             let notes = element.notes;
-    
+
             let newRow = tableBody.insertRow();
             if (element.mmode == true) {
-                newRow.className = "meeting";
+              newRow.className = "meeting";
             }
-    
+
             let cell1 = newRow.insertCell(0);
             cell1.innerHTML = period;
-    
+
             let cell2 = newRow.insertCell(1);
             cell2.innerHTML = duration;
-    
+
             let cell3 = newRow.insertCell(2);
             cell3.innerHTML = task;
-    
+
             let cell4 = newRow.insertCell(3);
             cell4.innerHTML = notes;
+          }
+        });
+        myTable.style.display = "inline";
+
+        populateTimeline(breakData);
+      }
+      const show_end_time = (breakData) => {
+        const startTime = new Date(breakData[0].startTime);
+
+        let totalBreakTime = 0;
+
+        for (let i = 1; i < breakData.length; i++) {
+          const breakStartTime = new Date(breakData[i - 1].endTime);
+          const breakEndTime = new Date(breakData[i].startTime);
+          const breakDuration = breakEndTime - breakStartTime;
+          totalBreakTime += breakDuration;
         }
-    });
-    myTable.style.display = 'inline';
 
-    
-    populateTimeline(breakData)
-    
-  }
-  const show_end_time = (breakData) =>{
-    const startTime = new Date(breakData[0].startTime);
-    
-    let totalBreakTime = 0;
+        const totalSessionTime = totalDailyHours * 60 * 60 * 1000; // 9 hours in milliseconds
+        const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
 
-    for (let i = 1; i < breakData.length; i++) {
-        const breakStartTime = new Date(breakData[i - 1].endTime);
-        const breakEndTime = new Date(breakData[i].startTime);
-        const breakDuration = breakEndTime - breakStartTime;
-        totalBreakTime += breakDuration;
-    }
+        const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
+        const minutes = sessionEndTime.getMinutes();
+        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
 
-    const totalSessionTime = totalDailyHours * 60 * 60 * 1000; // 9 hours in milliseconds
-    const sessionEndTime = new Date(startTime.getTime() + totalSessionTime + totalBreakTime);
+        document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
+      };
+      const populateTimeline = (breakData) => {
+        const popup = document.getElementById("popup");
+        const closePopupButton = document.getElementById("closePopup");
+        var timeline = document.getElementById("timeline");
+        timeline.innerHTML = "";
+        totalDuration = breakData[breakData.length - 1].endTime - breakData[0].startTime;
+        const totalDailyHours = 8;
+        if (totalDuration < totalDailyHours * 60 * 60 * 1000) {
+          totalDuration = totalDailyHours * 60 * 60 * 1000;
+        }
+        // Loop through the sessions array and create a timeline element for each session
+        for (var i = 0; i < breakData.length; i++) {
+          var session = breakData[i];
 
-    const hours = sessionEndTime.getHours() > 12 ? sessionEndTime.getHours() - 12 : sessionEndTime.getHours();
-    const minutes = sessionEndTime.getMinutes();
-    const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
-    const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+          // Calculate the start and end positions of the session in the timeline
+          var startPosition = ((session.startTime - breakData[0].startTime) / totalDuration) * 100;
+          var endPosition = ((session.endTime - breakData[0].startTime) / totalDuration) * 100;
 
-    document.getElementById("end-time").innerText = `Wrap up at ${endTimeStr}`;
-  }
-  const populateTimeline = (breakData) => {
-    const popup = document.getElementById("popup");
-    const closePopupButton = document.getElementById("closePopup");
-    var timeline = document.getElementById("timeline");
-    timeline.innerHTML = "";
-    totalDuration = breakData[breakData.length - 1].endTime - breakData[0].startTime;
-    const totalDailyHours = 8;
-    if (totalDuration < totalDailyHours * 60 * 60 * 1000) {
-        totalDuration = totalDailyHours * 60 * 60 * 1000;
-    }
-    // Loop through the sessions array and create a timeline element for each session
-    for (var i = 0; i < breakData.length; i++) {
-        var session = breakData[i];
+          // Create a div element for the session and set its position and width
+          var sessionElement = document.createElement("div");
+          sessionElement.style.left = startPosition + "%";
+          sessionElement.style.width = endPosition - startPosition + "%";
 
-        // Calculate the start and end positions of the session in the timeline
-        var startPosition = ((session.startTime - breakData[0].startTime) / totalDuration) * 100;
-        var endPosition = ((session.endTime - breakData[0].startTime) / totalDuration) * 100;
+          // Add the active hours as text content to the session element
+          sessionElement.title = getFormatedTime(session.startTime) + " - " + getFormatedTime(session.endTime) + " " + session.notes;
 
-        // Create a div element for the session and set its position and width
-        var sessionElement = document.createElement("div");
-        sessionElement.style.left = startPosition + "%";
-        sessionElement.style.width = endPosition - startPosition + "%";
+          // Add the session element to the timeline
+          timeline.appendChild(sessionElement);
+        }
+        timeline.style.display = "block";
 
-        // Add the active hours as text content to the session element
-        sessionElement.title = getFormatedTime(session.startTime) + " - " + getFormatedTime(session.endTime) + " " + session.notes;
+        // Show the popup
+        popup.style.display = "block";
 
-        // Add the session element to the timeline
-        timeline.appendChild(sessionElement);
-    }
-    timeline.style.display = "block";
+        // Close the popup when the close button is clicked
+        closePopupButton.addEventListener("click", function () {
+          popup.style.display = "none";
+          // Remove the event listener to avoid multiple listeners on future clicks
+          closePopupButton.removeEventListener("click", this);
+        });
+        show_end_time(breakData);
+      };
 
-    // Show the popup
-    popup.style.display = "block";
+      function getFormatedTime24(time) {
+        const sessionEndTime = new Date(time);
+        const hours = sessionEndTime.getHours();
+        const minutes = sessionEndTime.getMinutes();
+        const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
+        const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 
-  // Close the popup when the close button is clicked
-  closePopupButton.addEventListener("click", function () {
-    popup.style.display = "none";
-    // Remove the event listener to avoid multiple listeners on future clicks
-    closePopupButton.removeEventListener("click", this);
-  });
-  show_end_time(breakData)
+        return endTimeStr;
+      }
+      function decimalHoursToHoursMinutes(decimalHours) {
+        let hours = Math.floor(decimalHours);
+        let minutes = Math.round((decimalHours - hours) * 60);
+        if (minutes === 60) {
+          hours++;
+          minutes = 0;
+        }
+        let hoursText = hours > 1 ? "h" : "h";
+        let minutesText = minutes > 1 ? "m" : "m";
+        return hours + "" + hoursText + " " + minutes + "" + minutesText;
+      }
 
-
-};
-
-function getFormatedTime24(time) {
-    const sessionEndTime = new Date(time);
-    const hours = sessionEndTime.getHours();
-    const minutes = sessionEndTime.getMinutes();
-    const ampm = sessionEndTime.getHours() >= 12 ? "PM" : "AM";
-    const endTimeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-
-    return endTimeStr;
-}
-function decimalHoursToHoursMinutes(decimalHours) {
-    let hours = Math.floor(decimalHours);
-    let minutes = Math.round((decimalHours - hours) * 60);
-    if (minutes === 60) {
-        hours++;
-        minutes = 0;
-    }
-    let hoursText = hours > 1 ? "h" : "h";
-    let minutesText = minutes > 1 ? "m" : "m";
-    return hours + "" + hoursText + " " + minutes + "" + minutesText;
-}
-
-  // Call the function to fetch and populate data when the page loads
-  console.log("[init] page load — today:", today.toString(), "start_date:", start_date, "end_date:", end_date);
-  setDatepickerToToday();
-  fetchEmployeeData().then(() => {
-    console.log("[init] initial fetch done, initializing DataTable");
-    initializeDataTable(); // Initialize DataTable after the data is loaded
-  });
-
-
-
-</script>
-</body>
+      // Call the function to fetch and populate data when the page loads
+      console.log("[init] page load — today:", today.toString(), "start_date:", start_date, "end_date:", end_date);
+      setDatepickerToToday();
+      fetchEmployeeData().then(() => {
+        console.log("[init] initial fetch done, initializing DataTable");
+        initializeDataTable(); // Initialize DataTable after the data is loaded
+      });
+    </script>
+  </body>
 </html>
