@@ -551,6 +551,25 @@
       .activity_breakdown tbody tr.meeting:hover {
         background: #c7defe !important;
       }
+      .activity_breakdown tbody tr.break-row {
+        background: var(--danger-soft) !important;
+        color: var(--danger);
+      }
+      .activity_breakdown tbody tr.break-row:hover {
+        background: #fcc9c9 !important;
+      }
+      .activity_breakdown tbody tr.break-row td {
+        font-style: italic;
+      }
+      .break-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--danger);
+      }
 
       /* ─────────────────────────────────────────
        RESPONSIVE
@@ -889,6 +908,7 @@
       let start_date = milliseconds;
       let end_date = start_date + 86400000;
       let isToday = true; // gates the live 1s/sec counter to today only
+      const totalDailyHours = 8; // contracted hours per day
 
       function setDatepickerToToday() {
         const el = document.getElementById("datepicker");
@@ -1183,6 +1203,11 @@
         breakData = await response.json();
         let tableBody = document.querySelector("#myTable tbody");
         tableBody.innerHTML = "";
+        breakData.sort((a, b) => a.startTime - b.startTime);
+
+        let prevEndTime = null; // end of the last session we rendered
+        let totalBreakMs = 0;
+
         breakData.forEach((element) => {
           let period = getFormatedTime24(element.startTime) + " - " + getFormatedTime24(element.endTime).toLocaleString();
           let duration = decimalHoursToHoursMinutes(element.activeHours);
@@ -1191,6 +1216,16 @@
             if (duration.substr(0, 2) == "0h") {
               duration = duration.substr(3);
             }
+
+            // Gap between the previous session's end and this one's start is a break
+            if (prevEndTime !== null) {
+              const gapMs = element.startTime - prevEndTime;
+              if (gapMs >= 60000) {
+                totalBreakMs += gapMs;
+                insertBreakRow(tableBody, prevEndTime, element.startTime, gapMs);
+              }
+            }
+
             let activityLevel = element.activityLevel != "NA" ? " (" + element.activityLevel + "%)" : "";
             let task = element.projectName + ": " + element.projectTaskName + activityLevel;
             let notes = element.notes;
@@ -1211,11 +1246,32 @@
 
             let cell4 = newRow.insertCell(3);
             cell4.innerHTML = notes;
+
+            prevEndTime = element.endTime;
           }
         });
         myTable.style.display = "inline";
 
         populateTimeline(breakData);
+
+        if (totalBreakMs > 0) {
+          const endTimeEl = document.getElementById("end-time");
+          endTimeEl.innerText = `${endTimeEl.innerText} · Breaks ${formatDurationMs(totalBreakMs)}`;
+        }
+      }
+
+      function formatDurationMs(ms) {
+        const text = decimalHoursToHoursMinutes(ms / 3600000);
+        return text.substr(0, 2) === "0h" ? text.substr(3) : text;
+      }
+
+      function insertBreakRow(tableBody, fromTime, toTime, gapMs) {
+        const row = tableBody.insertRow();
+        row.className = "break-row";
+        row.insertCell(0).innerHTML = getFormatedTime24(fromTime) + " - " + getFormatedTime24(toTime);
+        row.insertCell(1).innerHTML = formatDurationMs(gapMs);
+        row.insertCell(2).innerHTML = `<span class="break-tag"><i class="fa fa-coffee"></i> Break</span>`;
+        row.insertCell(3).innerHTML = "";
       }
       const show_end_time = (breakData) => {
         const startTime = new Date(breakData[0].startTime);
@@ -1245,7 +1301,6 @@
         var timeline = document.getElementById("timeline");
         timeline.innerHTML = "";
         totalDuration = breakData[breakData.length - 1].endTime - breakData[0].startTime;
-        const totalDailyHours = 8;
         if (totalDuration < totalDailyHours * 60 * 60 * 1000) {
           totalDuration = totalDailyHours * 60 * 60 * 1000;
         }
